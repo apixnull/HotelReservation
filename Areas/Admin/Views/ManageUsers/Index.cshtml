@@ -54,9 +54,12 @@
                                 <a asp-action="Edit" asp-route-id="@user.UserId" class="btn btn-warning btn-sm">
                                     <i class="fas fa-edit"></i> Edit
                                 </a>
-                                <a asp-action="Delete" asp-route-id="@user.UserId" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">
-                                    <i class="fas fa-trash"></i> Delete
-                                </a>
+                                <form asp-action="Delete" method="post" class="d-inline" onsubmit="return confirmDelete(this);">
+                                    <input type="hidden" name="id" value="@user.UserId" />
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash-alt"></i> Delete
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                     }
@@ -82,6 +85,23 @@
                     row.style.display = "none";
                 }
             });
+        }
+
+        function confirmDelete(form) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "This action cannot be undone!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#6c757d",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+            return false; // Prevent default form submission until user confirms
         }
     </script>
 }

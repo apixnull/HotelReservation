@@ -1,4 +1,4 @@
-html {
+﻿html {
   font-size: 14px;
 }
 
@@ -30,17 +30,35 @@ body {
 
 
 /******************                   Display Alert Messages          ***************************/
-@keyframes fadeOut {
-    from {
-        opacity: 1;
-    }
-
-    to {
-        opacity: 0;
-    }
+/* ✅ Balanced Alert Styles */
+.swal-custom-popup {
+    font-size: 16px; /* ✅ Normal-sized text */
+    border-radius: 8px; /* ✅ Slightly rounded */
+    width: 500px !important; /* ✅ Wider but not tall */
+    margin-top: 70px !important; /* ✅ Push it just below the navbar */
 }
 
-.fade-out {
-    animation: fadeOut 1s ease-out;
-    opacity: 0;
+.swal-custom-title {
+    font-size: 18px; /* ✅ Medium title */
+    font-weight: bold;
+}
+
+.swal-custom-text {
+    font-size: 16px;
+}
+
+/* ✅ Background Colors for Different Alert Types */
+.swal2-success {
+    background-color: #28a745 !important; /* ✅ Light Green */
+    color: white !important;
+}
+
+.swal2-error {
+    background-color: #dc3545 !important; /* ✅ Light Red */
+    color: white !important;
+}
+
+.swal2-warning {
+    background-color: #ffc107 !important; /* ✅ Light Yellow */
+    color: #856404 !important;
 }

@@ -51,18 +51,6 @@ namespace HotelReservation.Services
 
             // ✅ Debugging: Check if authentication cookie is set in response
             var cookieHeader = httpContext.Response.Headers["Set-Cookie"].ToString();
-            Console.WriteLine("Set-Cookie Header: " + cookieHeader);
-
-            Console.WriteLine("🔎 Checking Claims After Login:");
-            foreach (var claim in claimsPrincipal.Claims)
-            {
-                Console.WriteLine($"Claim: {claim.Type} => {claim.Value}");
-            }
-            Console.WriteLine("User Authenticated: " + httpContext.User.Identity?.IsAuthenticated);
-
-            Console.WriteLine("User Role Claim: " + user.Role);
-
-            Console.WriteLine("Cookie Expiry Time: " + authProperties.ExpiresUtc);
 
             return !string.IsNullOrEmpty(cookieHeader);
         }

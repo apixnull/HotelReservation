@@ -10,13 +10,11 @@ namespace HotelReservation.Controllers
 {
     public class AuthController : Controller
     {
-        private readonly ApplicationDbContext _context;
         private readonly AuthService _authService;
         private readonly UserRegistrationService _userRegistrationService;
 
-        public AuthController(AuthService authService, UserRegistrationService userRegistrationService, ApplicationDbContext context)
-        {
-            _context = context; 
+        public AuthController(AuthService authService, UserRegistrationService userRegistrationService)
+        {   
             _authService = authService;
             _userRegistrationService = userRegistrationService;
         }
@@ -46,18 +44,14 @@ namespace HotelReservation.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
-            if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.Password))
+            var isAuthenticated = await _authService.AuthenticateUser(model);
+            if (!isAuthenticated)
             {
                 TempData["Error"] = "Invalid Email or Password.";
                 return View(model);
             }
 
-            // Authenticate user & sign in
-            await _authService.AuthenticateUser(model);
-
-            // ✅ Fetch the role directly from the database
-            string userRole = user.Role.ToString();
+            var userRole = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
 
             if (userRole == "Admin")
             {
@@ -68,8 +62,6 @@ namespace HotelReservation.Controllers
             TempData["Success"] = "Login successful.";
             return RedirectToAction("Index", "Home");
         }
-
-
 
         /*********************************************/
         // Register normal user

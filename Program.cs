@@ -41,8 +41,9 @@ namespace HotelReservation
 
             // Add services
             builder.Services.AddHttpContextAccessor();
-            builder.Services.AddScoped<UserRegistrationService>();
             builder.Services.AddScoped<AuthService>();
+            builder.Services.AddScoped<UserRegistrationService>();
+            builder.Services.AddScoped<ManageUserService>();
             builder.Services.AddAuthServices();
 
             var app = builder.Build();

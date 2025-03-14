@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/HotelReservation.styles.css" asp-append-version="true" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <header>
@@ -32,7 +33,6 @@
         </nav>
     </header>
     <div class="container">
-        @await Html.PartialAsync("_AlertsPartial")
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
@@ -47,5 +47,59 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            function showAlert(type, title, message) {
+                Swal.fire({
+                    icon: type,
+                    title: title,
+                    text: message,
+                    position: "top", // ✅ Display just below the navbar
+                    toast: true, // ✅ Keeps it compact
+                    showConfirmButton: false,
+                    timer: 3000, // Auto close in 3 seconds
+                    width: "500px", // ✅ Wider but not too tall
+                    padding: "12px",
+                    background: getBackgroundColor(type), // ✅ Custom background colors
+                    color: "#000", // ✅ Keep text readable
+                    customClass: {
+                        popup: "swal-custom-popup",
+                        title: "swal-custom-title",
+                        content: "swal-custom-text"
+                    }
+                });
+            }
+
+            function getBackgroundColor(type) {
+                switch (type) {
+                    case "success": return "#d4edda"; // ✅ Light Green
+                    case "error": return "#f8d7da"; // ✅ Light Red
+                    case "warning": return "#fff3cd"; // ✅ Light Yellow
+                    default: return "#ffffff"; // Default
+                }
+            }
+
+            // Success Alert
+            var successMessage = "@TempData["Success"]";
+            if (successMessage) {
+                showAlert("success", "Success!", successMessage);
+            }
+
+            // Error Alert
+            var errorMessage = "@TempData["Error"]";
+            if (errorMessage) {
+                showAlert("error", "Oops!", errorMessage);
+            }
+
+            // Warning Alert
+            var warningMessage = "@Context.Request.Query["warning"]";
+            if (warningMessage) {
+                showAlert("warning", "Warning!", warningMessage);
+            }
+        });
+    </script>
+
+
 </body>
 </html>

@@ -33,7 +33,9 @@
                 <span asp-validation-for="SecretKey" class="text-danger"></span>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100">Register as Admin</button>
+            <button type="submit" class="btn btn-primary w-100" id="registerAdminButton">
+                Register as Admin
+            </button>
         </form>
 
         <div class="text-center mt-3">
@@ -45,4 +47,30 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const registerAdminButton = document.getElementById("registerAdminButton");
+
+            if (registerAdminButton) {
+                registerAdminButton.addEventListener("click", function (event) {
+                    event.preventDefault(); // Prevent form submission
+
+                    Swal.fire({
+                        title: "Confirm Admin Registration",
+                        text: "Are you sure you want to create this admin account?",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#d33",
+                        cancelButtonColor: "#6c757d",
+                        confirmButtonText: "Yes, register!"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            registerAdminButton.closest("form").submit(); // Submit the form
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+
 }
