@@ -1,0 +1,10 @@
+﻿@{
+    var userRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+
+    if (userRole == "Admin" && !Context.Request.Path.StartsWithSegments("/Admin"))
+    {
+        Context.Response.Redirect("/Admin/Dashboard");
+    }
+
+    Layout = "_Layout"; // Default layout
+}

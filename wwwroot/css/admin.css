@@ -1,0 +1,205 @@
+﻿/* ✅ Full-page wrapper */
+.admin-wrapper {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ✅ Sidebar */
+#admin-sidebar {
+    width: 220px;
+    height: 100vh;
+    background: #2C3E50;
+    color: white;
+    position: fixed;
+    padding-top: 10px;
+}
+
+.sidebar-header {
+    text-align: center;
+    padding: 15px 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-decoration: none;
+}
+
+    .sidebar-logo i {
+        font-size: 24px;
+        margin-right: 10px;
+    }
+
+/* ✅ Sidebar Menu */
+.sidebar-menu {
+    padding-left: 0;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    color: white;
+    padding: 12px 20px;
+    text-decoration: none;
+    transition: background 0.3s;
+}
+
+    .nav-link:hover {
+        background: #34495E;
+    }
+
+    .nav-link i {
+        font-size: 18px;
+        width: 30px;
+    }
+
+/* ✅ Logout Button */
+.logout-btn {
+    background: none;
+    border: none;
+    color: white;
+    width: 100%;
+    text-align: left;
+    padding: 12px 20px;
+    cursor: pointer;
+}
+
+    .logout-btn:hover {
+        background: #E74C3C;
+    }
+
+/* ✅ Main Content */
+#admin-content {
+    margin-left: 220px;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ✅ Top Navigation Bar */
+.admin-navbar {
+    width: 100%;
+    height: 60px;
+    background: white;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    justify-content: space-between;
+}
+
+/* ✅ Admin Page Container */
+.admin-container {
+    flex-grow: 1;
+    padding: 20px;
+    width: 100%;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/******************                   Display Alert Messages          ***************************/
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+.fade-out {
+    animation: fadeOut 1s ease-out;
+    opacity: 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/************************************/
+/* ✅ Dashboard Stats */
+.stat-card {
+    background: #f8f9fa;
+    border-left: 5px solid #007bff;
+}
+
+    .stat-card .stat-icon {
+        font-size: 40px;
+        color: #007bff;
+    }
+
+/* ✅ Recent Reservations */
+.table th, .table td {
+    vertical-align: middle;
+}
+
+/* ✅ Booking Trends Chart */
+canvas {
+    height: 250px !important;
+}
+
+/* ✅ Room Availability Badges */
+.list-group-item {
+    font-weight: 500;
+}
+
+
+
+
+
+/********************************************************/
+/* Index Manege User */
+/* ✅ Table Styling */
+.table {
+    margin-top: 20px;
+}
+
+/* ✅ Search Box */
+#searchUser {
+    width: 100%;
+}
+
+/* ✅ Badge Styling */
+.badge {
+    font-size: 14px;
+}
+
+/* ✅ Table Hover Effect */
+.table-hover tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* ✅ Card Styling */
+.card {
+    border-radius: 10px;
+}

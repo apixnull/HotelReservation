@@ -1,0 +1,30 @@
+﻿@* Success Alert *@
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show auto-dismiss" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@* Error Alert *@
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show auto-dismiss" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@* Warning Alert *@
+@{
+    var warningMessage = Context.Request.Query["warning"];
+}
+
+@if (!string.IsNullOrEmpty(warningMessage))
+{
+    <div class="alert alert-warning alert-dismissible fade show auto-dismiss" role="alert">
+        @warningMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}

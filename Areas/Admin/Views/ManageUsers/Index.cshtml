@@ -1,0 +1,87 @@
+﻿@model List<HotelReservation.Models.User>
+
+@{
+    ViewData["Title"] = "Manage Users";
+}
+
+<div class="container-fluid">
+    <h2 class="mb-4">Manage Users</h2>
+
+    <!-- ✅ Create Button & Search Bar -->
+    <div class="d-flex justify-content-between mb-3">
+        <a asp-action="Create" class="btn btn-success">
+            <i class="fas fa-user-plus"></i> Create User
+        </a>
+        <div class="d-flex">
+            <input type="text" id="searchUser" class="form-control me-2" placeholder="Search by Name or Email" onkeyup="searchUsers()">
+            <button class="btn btn-primary" onclick="searchUsers()">Search</button>
+        </div>
+    </div>
+
+    <!-- ✅ Users Table -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-striped align-middle" id="usersTable">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Profile</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Date Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        // ✅ Use stored path directly
+                        var profilePic = string.IsNullOrEmpty(user.ProfilePicture)
+                        ? Url.Content("~/images/default-profile.png")
+                        : user.ProfilePicture;
+
+                        <tr>
+                            <td>@user.UserId</td>
+                            <td>
+                                <img src="@profilePic" class="rounded-circle border" style="width: 40px; height: 40px; object-fit: cover;">
+                            </td>
+                            <td>@(string.IsNullOrEmpty(user.FirstName) ? "N/A" : user.FirstName) @(string.IsNullOrEmpty(user.LastName) ? "" : user.LastName)</td>
+                            <td>@user.Email</td>
+                            <td><span class="badge bg-info">@user.Role</span></td>
+                            <td>@user.CreatedAt.ToString("yyyy-MM-dd")</td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@user.UserId" class="btn btn-warning btn-sm">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@user.UserId" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">
+                                    <i class="fas fa-trash"></i> Delete
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function searchUsers() {
+            var searchValue = document.getElementById("searchUser").value.toLowerCase();
+            var rows = document.querySelectorAll("#usersTable tbody tr");
+
+            rows.forEach(row => {
+                var name = row.children[2].textContent.toLowerCase();
+                var email = row.children[3].textContent.toLowerCase();
+
+                if (name.includes(searchValue) || email.includes(searchValue)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
+    </script>
+}

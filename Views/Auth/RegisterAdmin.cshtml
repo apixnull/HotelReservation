@@ -1,0 +1,48 @@
+﻿@model HotelReservation.ViewModels.AdminRegisterFormModel
+
+@{
+    ViewData["Title"] = "Admin Registration";
+}
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="card shadow-lg p-4" style="width: 400px;">
+        <h3 class="text-center mb-4">Admin Registration</h3>
+
+        <form asp-action="RegisterAdmin" method="post">
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label fw-bold"></label>
+                <input asp-for="Email" class="form-control" placeholder="Enter admin email" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label fw-bold"></label>
+                <input asp-for="Password" type="password" class="form-control" placeholder="Enter password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="ConfirmPassword" class="form-label fw-bold"></label>
+                <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Confirm password" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="SecretKey" class="form-label fw-bold"></label>
+                <input asp-for="SecretKey" class="form-control" placeholder="Enter secret key" />
+                <span asp-validation-for="SecretKey" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Register as Admin</button>
+        </form>
+
+        <div class="text-center mt-3">
+            <span>Already an admin?</span>
+            <a href="/Auth/Login" class="text-decoration-none fw-bold">Login here</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

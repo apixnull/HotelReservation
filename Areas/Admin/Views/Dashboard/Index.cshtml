@@ -1,0 +1,167 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container-fluid">
+    <h2 class="mb-4">Admin Dashboard</h2>
+
+    <!-- ✅ Quick Stats Cards -->
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="card-body d-flex align-items-center">
+                    <i class="fas fa-users stat-icon"></i>
+                    <div class="ms-3">
+                        <h5>Total Users</h5>
+                        <h3>1,230</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="card-body d-flex align-items-center">
+                    <i class="fas fa-calendar-check stat-icon"></i>
+                    <div class="ms-3">
+                        <h5>Bookings</h5>
+                        <h3>320</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="card-body d-flex align-items-center">
+                    <i class="fas fa-bed stat-icon"></i>
+                    <div class="ms-3">
+                        <h5>Available Rooms</h5>
+                        <h3>45</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="card-body d-flex align-items-center">
+                    <i class="fas fa-dollar-sign stat-icon"></i>
+                    <div class="ms-3">
+                        <h5>Total Revenue</h5>
+                        <h3>$45,500</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ Booking Trends Graph (Placeholder) -->
+    <div class="row mt-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Booking Trends</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="bookingChart"></canvas> <!-- Placeholder for Chart.js -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ✅ Room Availability -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Room Availability</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Standard Rooms
+                            <span class="badge bg-success">20 Available</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Deluxe Rooms
+                            <span class="badge bg-warning">10 Available</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Suite Rooms
+                            <span class="badge bg-danger">5 Available</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ Recent Reservations Table -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Recent Reservations</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Guest Name</th>
+                                <th>Room Type</th>
+                                <th>Check-in</th>
+                                <th>Check-out</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>John Doe</td>
+                                <td>Deluxe Room</td>
+                                <td>2025-03-10</td>
+                                <td>2025-03-15</td>
+                                <td><span class="badge bg-success">Confirmed</span></td>
+                            </tr>
+                            <tr>
+                                <td>Jane Smith</td>
+                                <td>Suite Room</td>
+                                <td>2025-03-12</td>
+                                <td>2025-03-18</td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                            </tr>
+                            <tr>
+                                <td>Michael Johnson</td>
+                                <td>Standard Room</td>
+                                <td>2025-03-08</td>
+                                <td>2025-03-10</td>
+                                <td><span class="badge bg-danger">Cancelled</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var ctx = document.getElementById("bookingChart").getContext("2d");
+            var bookingChart = new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+                    datasets: [{
+                        label: "Bookings",
+                        data: [10, 25, 40, 55, 30, 50],
+                        backgroundColor: "rgba(0, 123, 255, 0.2)",
+                        borderColor: "rgba(0, 123, 255, 1)",
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        });
+    </script>
+}
