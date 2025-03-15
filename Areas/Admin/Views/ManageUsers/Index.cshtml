@@ -1,4 +1,33 @@
-﻿@model List<HotelReservation.Models.User>
+﻿<style>
+    /********************************************************/
+    /* Index Manege User */
+    /* ✅ Table Styling */
+    .table {
+        margin-top: 20px;
+    }
+
+    /* ✅ Search Box */
+    #searchUser {
+        width: 100%;
+    }
+
+    /* ✅ Badge Styling */
+    .badge {
+        font-size: 14px;
+    }
+
+    /* ✅ Table Hover Effect */
+    .table-hover tbody tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    /* ✅ Card Styling */
+    .card {
+        border-radius: 10px;
+    }
+</style>
+
+@model List<HotelReservation.Models.User>
 
 @{
     ViewData["Title"] = "Manage Users";

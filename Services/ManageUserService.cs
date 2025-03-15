@@ -40,7 +40,7 @@ namespace HotelReservation.Services
             string? profilePicturePath = null;
             if (model.ProfilePicture != null)
             {
-                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "profiles");
                 if (!Directory.Exists(uploadsFolder))
                 {
                     Directory.CreateDirectory(uploadsFolder);
@@ -52,7 +52,7 @@ namespace HotelReservation.Services
                 {
                     await model.ProfilePicture.CopyToAsync(stream);
                 }
-                profilePicturePath = $"/uploads/{uniqueFileName}";
+                profilePicturePath = $"/uploads/profiles/{uniqueFileName}";
             }
 
             var newUser = new User
@@ -98,7 +98,7 @@ namespace HotelReservation.Services
             
             if(model.ProfilePicture != null)
             {
-                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "profiles");
                 if (!Directory.Exists(uploadsFolder))
                 {
                     Directory.CreateDirectory(uploadsFolder);
@@ -121,7 +121,7 @@ namespace HotelReservation.Services
                     await model.ProfilePicture.CopyToAsync(stream);
                 }
 
-                user.ProfilePicture = $"/uploads/{uniqueFileName}";
+                user.ProfilePicture = $"/uploads/profiles/{uniqueFileName}";
             }
 
             _context.Update(user);

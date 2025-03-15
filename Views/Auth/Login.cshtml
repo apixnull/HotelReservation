@@ -2,43 +2,135 @@
 
 @{
     ViewData["Title"] = "Login";
+    Layout = null; // ✅ No layout
 }
 
-<div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="card shadow-lg p-4" style="width: 400px;">
-        <h3 class="text-center mb-4">Login</h3>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Luxury Hotel</title>
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+    <!-- ✅ Bootstrap & FontAwesome -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <!-- put this for nice alert messages -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
 
-        <form asp-action="Login" method="post">
-            <div class="mb-3">
-                <label asp-for="Email" class="form-label fw-bold"></label>
-                <input asp-for="Email" class="form-control" placeholder="Enter your email" />
-                <span asp-validation-for="Email" class="text-danger"></span>
+    <!-- ✅ Back to Home Button (Now Visible) -->
+    <a href="/" class="back-to-home">
+        <i class="fas fa-arrow-left"></i> Back to Home
+    </a>
+
+    <!-- ✅ Left Section: Login Form -->
+    <div class="login-section">
+        <div class="hotel-logo">
+            <i class="fas fa-hotel"></i> Luxury Hotel
+        </div>
+
+        <div class="login-form">
+            <h2>Welcome Back</h2>
+
+            <!-- ✅ Social Media Login -->
+            <div class="social-icons">
+                <a href="#" class="facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="google"><i class="fab fa-google"></i></a>
+                <a href="#" class="twitter"><i class="fab fa-twitter"></i></a>
             </div>
 
-            <div class="mb-3">
-                <label asp-for="Password" class="form-label fw-bold"></label>
-                <input asp-for="Password" type="password" class="form-control" placeholder="Enter your password" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div class="form-check">
-                    <input asp-for="RememberMe" class="form-check-input" type="checkbox" />
-                    <label asp-for="RememberMe" class="form-check-label"></label>
+            <form asp-action="Login" method="post">
+                <div class="mb-3">
+                    <input asp-for="Email" class="form-control" placeholder="Enter your email" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
-                <a href="#" class="text-decoration-none">Forgot password?</a>
+
+                <div class="mb-3">
+                    <input asp-for="Password" type="password" class="form-control" placeholder="Enter your password" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="form-check">
+                        <input asp-for="RememberMe" class="form-check-input" type="checkbox" />
+                        <label asp-for="RememberMe" class="form-check-label"></label>
+                    </div>
+                    <a href="#" class="text-decoration-none">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="btn btn-gold w-100">Login</button>
+            </form>
+
+            <div class="text-center mt-3">
+                <span>Don't have an account?</span>
+                <a href="/Auth/Register" class="text-decoration-none fw-bold">Register here</a>
             </div>
-
-            <button type="submit" class="btn btn-primary w-100">Login</button>
-        </form>
-
-        <div class="text-center mt-3">
-            <span>Don't have an account?</span>
-            <a href="/Auth/Register" class="text-decoration-none fw-bold">Register here</a>
         </div>
     </div>
-</div>
 
-@section Scripts {
+    <!-- ✅ Right Section: Hotel Image -->
+    <div class="image-section">
+        <div class="image-overlay"></div>
+    </div>
+
+    <!-- ✅ Scripts -->
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
     <partial name="_ValidationScriptsPartial" />
-}
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            function showAlert(type, title, message) {
+                Swal.fire({
+                    icon: type,
+                    title: title,
+                    text: message,
+                    position: "top", // ✅ Display just below the navbar
+                    toast: true, // ✅ Keeps it compact
+                    showConfirmButton: false,
+                    timer: 3000, // Auto close in 3 seconds
+                    width: "500px", // ✅ Wider but not too tall
+                    padding: "12px",
+                    background: getBackgroundColor(type), // ✅ Custom background colors
+                    color: "#000", // ✅ Keep text readable
+                    customClass: {
+                        popup: "swal-custom-popup",
+                        title: "swal-custom-title",
+                        content: "swal-custom-text"
+                    }
+                });
+            }
+
+            function getBackgroundColor(type) {
+                switch (type) {
+                    case "success": return "#d4edda"; // ✅ Light Green
+                    case "error": return "#f8d7da"; // ✅ Light Red
+                    case "warning": return "#fff3cd"; // ✅ Light Yellow
+                    default: return "#ffffff"; // Default
+                }
+            }
+
+            // Success Alert
+            var successMessage = "@TempData["Success"]";
+            if (successMessage) {
+                showAlert("success", "Success!", successMessage);
+            }
+
+            // Error Alert
+            var errorMessage = "@TempData["Error"]";
+            if (errorMessage) {
+                showAlert("error", "Oops!", errorMessage);
+            }
+
+            // Warning Alert
+            var warningMessage = "@Context.Request.Query["warning"]";
+            if (warningMessage) {
+                showAlert("warning", "Warning!", warningMessage);
+            }
+        });
+    </script>
+
+</body>
+</html>

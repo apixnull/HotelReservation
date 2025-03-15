@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using HotelReservation.Data;
 using HotelReservation.Models;
 using Microsoft.AspNetCore.Authorization;
 using HotelReservation.Areas.Admin.ViewModels;

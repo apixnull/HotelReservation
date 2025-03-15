@@ -5,15 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>@ViewData["Title"] - Admin Panel</title>
+
+    <!-- ✅ Bootstrap & Custom Styles -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/HotelReservation.styles.css" asp-append-version="true" />
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
-    <div class="admin-wrapper">
+
+    <div class="admin-container">
         <!-- ✅ Sidebar -->
-        <nav id="admin-sidebar">
+        <aside id="admin-sidebar">
             <div class="sidebar-header">
                 <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="sidebar-logo">
                     <i class="fas fa-hotel"></i> <span class="sidebar-text">Admin Panel</span>
@@ -48,19 +51,17 @@
                     </form>
                 </li>
             </ul>
-        </nav>
+        </aside>
 
         <!-- ✅ Main Content -->
         <div id="admin-content">
             <nav class="admin-navbar">
-                <span class="admin-title">Admin Panel</span>
                 <div class="user-menu">
                     @await Html.PartialAsync("_UserMenuPartial")
                 </div>
             </nav>
 
-            <div class="admin-container">
-                @await Html.PartialAsync("_AlertsPartial")
+            <div class="admin-main">
                 <main>
                     @RenderBody()
                 </main>
@@ -68,9 +69,65 @@
         </div>
     </div>
 
+    <!-- ✅ Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/admin.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            function showAlert(type, title, message) {
+                Swal.fire({
+                    icon: type,
+                    title: title,
+                    text: message,
+                    position: "top", // ✅ Display just below the navbar
+                    toast: true, // ✅ Keeps it compact
+                    showConfirmButton: false,
+                    timer: 3000, // Auto close in 3 seconds
+                    width: "500px", // ✅ Wider but not too tall
+                    padding: "12px",
+                    background: getBackgroundColor(type), // ✅ Custom background colors
+                    color: "#000", // ✅ Keep text readable
+                    customClass: {
+                        popup: "swal-custom-popup",
+                        title: "swal-custom-title",
+                        content: "swal-custom-text"
+                    }
+                });
+            }
+
+            function getBackgroundColor(type) {
+                switch (type) {
+                    case "success": return "#d4edda"; // ✅ Light Green
+                    case "error": return "#f8d7da"; // ✅ Light Red
+                    case "warning": return "#fff3cd"; // ✅ Light Yellow
+                    default: return "#ffffff"; // Default
+                }
+            }
+
+            // Success Alert
+            var successMessage = "@TempData["Success"]";
+            if (successMessage) {
+                showAlert("success", "Success!", successMessage);
+            }
+
+            // Error Alert
+            var errorMessage = "@TempData["Error"]";
+            if (errorMessage) {
+                showAlert("error", "Oops!", errorMessage);
+            }
+
+            // Warning Alert
+            var warningMessage = "@Context.Request.Query["warning"]";
+            if (warningMessage) {
+                showAlert("warning", "Warning!", warningMessage);
+            }
+        });
+    </script>
+
 </body>
 </html>
+
+

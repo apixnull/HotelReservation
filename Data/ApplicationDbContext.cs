@@ -7,6 +7,8 @@ namespace HotelReservation.Data
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
         public DbSet<User> Users { get; set; }
+        public DbSet<Room> Rooms { get; set; }  // ✅ Register Room
+        public DbSet<RoomImage> RoomImages { get; set; }  // ✅ Register RoomImage
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -16,6 +18,24 @@ namespace HotelReservation.Data
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Email)
                 .IsUnique();
+
+            // Define one-to-many relationship between Room and RoomImage
+            modelBuilder.Entity<RoomImage>()
+                .HasOne(ri => ri.Room)
+                .WithMany(r => r.Images) 
+                .HasForeignKey(ri => ri.RoomId)
+                .OnDelete(DeleteBehavior.Cascade); // If a room is deleted, its images are also deleted
+
+            // ✅ Explicitly define decimal precision for Room Price
+            modelBuilder.Entity<Room>()
+                .Property(r => r.Price)
+                .HasColumnType("decimal(10,2)");
+
+            // ✅ Enforce unique constraint on RoomNumber in Rooms table
+            modelBuilder.Entity<Room>()
+                .HasIndex(r => r.RoomNumber)
+                .IsUnique();
+
         }
     }
 }   

@@ -1,109 +1,112 @@
-﻿/* ✅ Full-page wrapper */
-.admin-wrapper {
+﻿/* ✅ General Admin Panel Layout */
+.admin-container {
     display: flex;
     height: 100vh;
-    overflow: hidden;
+    background-color: #f4f6f9;
 }
 
 /* ✅ Sidebar */
 #admin-sidebar {
-    width: 220px;
-    height: 100vh;
-    background: #2C3E50;
-    color: white;
+    width: 260px;
+    background: #343a40;
+    color: #ffffff;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
     position: fixed;
-    padding-top: 10px;
+    height: 100%;
+    left: 0;
+    top: 0;
 }
 
 .sidebar-header {
+    font-size: 22px;
+    font-weight: bold;
     text-align: center;
     padding: 15px 0;
-    font-size: 18px;
-    font-weight: bold;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .sidebar-logo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
     color: white;
     text-decoration: none;
 }
 
-    .sidebar-logo i {
-        font-size: 24px;
-        margin-right: 10px;
-    }
-
-/* ✅ Sidebar Menu */
 .sidebar-menu {
-    padding-left: 0;
+    padding: 0;
+    list-style-type: none;
+    margin-top: 20px;
 }
 
-.nav-link {
-    display: flex;
-    align-items: center;
-    color: white;
-    padding: 12px 20px;
-    text-decoration: none;
-    transition: background 0.3s;
-}
-
-    .nav-link:hover {
-        background: #34495E;
+    .sidebar-menu .nav-item {
+        margin-bottom: 10px;
     }
 
-    .nav-link i {
-        font-size: 18px;
-        width: 30px;
+    .sidebar-menu .nav-link {
+        color: white;
+        padding: 10px 15px;
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        font-size: 16px;
+        transition: 0.3s;
     }
+
+        .sidebar-menu .nav-link i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .sidebar-menu .nav-link:hover,
+        .sidebar-menu .nav-link.active {
+            background-color: #495057;
+            border-radius: 5px;
+        }
 
 /* ✅ Logout Button */
 .logout-btn {
     background: none;
     border: none;
     color: white;
+    padding: 10px 15px;
     width: 100%;
     text-align: left;
-    padding: 12px 20px;
+    font-size: 16px;
     cursor: pointer;
+    transition: 0.3s;
 }
 
     .logout-btn:hover {
-        background: #E74C3C;
+        background-color: #dc3545;
+        border-radius: 5px;
     }
 
 /* ✅ Main Content */
 #admin-content {
-    margin-left: 220px;
-    width: 100%;
-    height: 100vh;
+    flex: 1;
+    margin-left: 260px;
     display: flex;
     flex-direction: column;
+    width: calc(100% - 260px);
 }
 
-/* ✅ Top Navigation Bar */
+/* ✅ Top Navbar */
 .admin-navbar {
-    width: 100%;
-    height: 60px;
     background: white;
+    padding: 15px 20px;
     border-bottom: 1px solid #ddd;
     display: flex;
+    justify-content: flex-end;
     align-items: center;
-    padding: 0 20px;
-    justify-content: space-between;
+    height: 60px;
 }
 
-/* ✅ Admin Page Container */
-.admin-container {
-    flex-grow: 1;
+/* ✅ Main Content Wrapper */
+.admin-main {
     padding: 20px;
-    width: 100%;
+    overflow-y: auto;
+    flex: 1;
 }
-
-
-
-
 
 
 
@@ -113,93 +116,50 @@
 
 
 /******************                   Display Alert Messages          ***************************/
-@keyframes fadeOut {
-    from {
-        opacity: 1;
-    }
-
-    to {
-        opacity: 0;
-    }
+/******************                   Display Alert Messages          ***************************/
+/* ✅ Balanced Alert Styles */
+.swal-custom-popup {
+    font-size: 16px; /* ✅ Normal-sized text */
+    border-radius: 8px; /* ✅ Slightly rounded */
+    width: 500px !important; /* ✅ Wider but not tall */
+    margin-top: 70px !important; /* ✅ Push it just below the navbar */
 }
 
-.fade-out {
-    animation: fadeOut 1s ease-out;
-    opacity: 0;
+.swal-custom-title {
+    font-size: 18px; /* ✅ Medium title */
+    font-weight: bold;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/************************************/
-/* ✅ Dashboard Stats */
-.stat-card {
-    background: #f8f9fa;
-    border-left: 5px solid #007bff;
+.swal-custom-text {
+    font-size: 16px;
 }
 
-    .stat-card .stat-icon {
-        font-size: 40px;
-        color: #007bff;
-    }
-
-/* ✅ Recent Reservations */
-.table th, .table td {
-    vertical-align: middle;
+/* ✅ Background Colors for Different Alert Types */
+.swal2-success {
+    background-color: #28a745 !important; /* ✅ Light Green */
+    color: white !important;
 }
 
-/* ✅ Booking Trends Chart */
-canvas {
-    height: 250px !important;
+.swal2-error {
+    background-color: #dc3545 !important; /* ✅ Light Red */
+    color: white !important;
 }
 
-/* ✅ Room Availability Badges */
-.list-group-item {
-    font-weight: 500;
+.swal2-warning {
+    background-color: #ffc107 !important; /* ✅ Light Yellow */
+    color: #856404 !important;
 }
 
 
 
 
 
-/********************************************************/
-/* Index Manege User */
-/* ✅ Table Styling */
-.table {
-    margin-top: 20px;
-}
 
-/* ✅ Search Box */
-#searchUser {
-    width: 100%;
-}
 
-/* ✅ Badge Styling */
-.badge {
-    font-size: 14px;
-}
 
-/* ✅ Table Hover Effect */
-.table-hover tbody tr:hover {
-    background-color: #f1f1f1;
-}
 
-/* ✅ Card Styling */
-.card {
-    border-radius: 10px;
-}
+
+
+
+
+

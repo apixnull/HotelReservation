@@ -45,6 +45,7 @@ namespace HotelReservation
             builder.Services.AddScoped<UserRegistrationService>();
             builder.Services.AddScoped<ManageUserService>();
             builder.Services.AddAuthServices();
+            builder.Services.AddScoped<ManageRoomService>();
 
             var app = builder.Build();
 

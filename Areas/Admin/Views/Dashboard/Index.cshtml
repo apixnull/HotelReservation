@@ -1,4 +1,35 @@
-﻿@{
+﻿<style>
+
+    /************************************/
+    /* ✅ Dashboard Stats */
+    .stat-card {
+        background: #f8f9fa;
+        border-left: 5px solid #007bff;
+    }
+
+        .stat-card .stat-icon {
+            font-size: 40px;
+            color: #007bff;
+        }
+
+    /* ✅ Recent Reservations */
+    .table th, .table td {
+        vertical-align: middle;
+    }
+
+    /* ✅ Booking Trends Chart */
+    canvas {
+        height: 250px !important;
+    }
+
+    /* ✅ Room Availability Badges */
+    .list-group-item {
+        font-weight: 500;
+    }
+
+</style>
+
+@{
     ViewData["Title"] = "Admin Dashboard";
 }
 
