@@ -23,6 +23,7 @@
     <Folder Include="wwwroot\assets\img\" />
     <Folder Include="wwwroot\assets\js\" />
     <Folder Include="wwwroot\uploads\" />
+	<Folder Include="wwwroot\adminAssets" />
   </ItemGroup>
 
 </Project>

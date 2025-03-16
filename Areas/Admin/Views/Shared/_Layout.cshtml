@@ -2,77 +2,147 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>@ViewData["Title"] - Admin Panel</title>
 
     <!-- ✅ Bootstrap & Custom Styles -->
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/HotelReservation.styles.css" asp-append-version="true" />
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    @* <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /> *@
+    @* <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" /> *@
+    @* <link rel="stylesheet" href="~/HotelReservation.styles.css" asp-append-version="true" /> *@
+
+    <link href="~/adminAssets/vendor/fontawesome/css/fontawesome.min.css" rel="stylesheet" asp-append-version="true">
+    <link href="~/adminAssets/vendor/fontawesome/css/solid.min.css" rel="stylesheet" asp-append-version="true">
+    <link href="~/adminAssets/vendor/fontawesome/css/brands.min.css" rel="stylesheet" asp-append-version="true">
+    <link href="~/adminAssets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" asp-append-version="true">
+    <link href="~/adminAssets/css/master.css" rel="stylesheet" asp-append-version="true">
+    <link href="~/adminAssets/vendor/flagiconcss/css/flag-icon.min.css" rel="stylesheet" asp-append-version="true">
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 
-    <div class="admin-container">
-        <!-- ✅ Sidebar -->
-        <aside id="admin-sidebar">
+    <div class="wrapper">
+        <nav id="sidebar" class="active">
             <div class="sidebar-header">
-                <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="sidebar-logo">
-                    <i class="fas fa-hotel"></i> <span class="sidebar-text">Admin Panel</span>
-                </a>
+                <img src="~/adminAssets/img/bootstraper-logo.png" alt="bootraper logo" class="app-logo">
             </div>
-            <ul class="nav flex-column sidebar-menu">
-                <li class="nav-item">
-                    <a class="nav-link" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
-                        <i class="fas fa-tachometer-alt"></i> <span class="menu-text">Dashboard</span>
-                    </a>
+            <ul class="list-unstyled components text-secondary">
+                <li>
+                    <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index"><i class="fas fa-home"></i> Dashboard</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" asp-area="Admin" asp-controller="ManageUsers" asp-action="Index">
-                        <i class="fas fa-users"></i> <span class="menu-text">Users</span>
-                    </a>
+                <li>
+                    <a asp-area="Admin" asp-controller="ManageUsers" asp-action="Index"><i class="fas fa-file-alt"></i> Manage User</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" asp-area="Admin" asp-controller="Rooms" asp-action="Index">
-                        <i class="fas fa-bed"></i> <span class="menu-text">Rooms</span>
-                    </a>
+                <li>
+                    <a asp-area="Admin" asp-controller="ManageRooms" asp-action="Index"><i class="fas fa-table"></i> Manage Room</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" asp-area="Admin" asp-controller="Reservations" asp-action="Index">
-                        <i class="fas fa-calendar-check"></i> <span class="menu-text">Reservations</span>
-                    </a>
+                <li>
+                    <a asp-area="Admin" asp-controller="Reservations" asp-action="Index"><i class="fas fa-chart-bar"></i>Reservations</a>
                 </li>
-                <li class="nav-item">
-                    <form method="post" asp-area="" asp-controller="Auth" asp-action="Logout">
-                        <button type="submit" class="nav-link logout-btn">
-                            <i class="fas fa-sign-out-alt"></i> <span class="menu-text">Logout</span>
-                        </button>
-                    </form>
+                <li>
+                    <a href="#authmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle no-caret-down"><i class="fas fa-user-shield"></i> Authentication</a>
+                    <ul class="collapse list-unstyled" id="authmenu">
+                        <li>
+                            <a href="login.html"><i class="fas fa-lock"></i> Login</a>
+                        </li>
+                        <li>
+                            <a href="signup.html"><i class="fas fa-user-plus"></i> Signup</a>
+                        </li>
+                        <li>
+                            <a href="forgot-password.html"><i class="fas fa-user-lock"></i> Forgot password</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#pagesmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle no-caret-down"><i class="fas fa-copy"></i> Pages</a>
+                    <ul class="collapse list-unstyled" id="pagesmenu">
+                        <li>
+                            <a href="blank.html"><i class="fas fa-file"></i> Blank page</a>
+                        </li>
+                        <li>
+                            <a href="404.html"><i class="fas fa-info-circle"></i> 404 Error page</a>
+                        </li>
+                        <li>
+                            <a href="500.html"><i class="fas fa-info-circle"></i> 500 Error page</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="settings.html"><i class="fas fa-cog"></i>Settings</a>
                 </li>
             </ul>
-        </aside>
+        </nav>
+        <div id="body" class="active">
+            <!-- navbar navigation component -->
+            <nav class="navbar navbar-expand-lg navbar-white bg-white">
+                <button type="button" id="sidebarCollapse" class="btn btn-light">
+                    <i class="fas fa-bars"></i><span></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="nav navbar-nav ms-auto">
+                        <li class="nav-item dropdown">
+                            <div class="nav-dropdown">
+                                <a href="#" id="nav1" class="nav-item nav-link dropdown-toggle text-secondary" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-link"></i> <span>Quick Links</span> <i style="font-size: .8em;" class="fas fa-caret-down"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end nav-link-menu" aria-labelledby="nav1">
+                                    <ul class="nav-list">
+                                        <li><a href="" class="dropdown-item"><i class="fas fa-list"></i> Access Logs</a></li>
+                                        <div class="dropdown-divider"></div>
+                                        <li><a href="" class="dropdown-item"><i class="fas fa-database"></i> Back ups</a></li>
+                                        <div class="dropdown-divider"></div>
+                                        <li><a href="" class="dropdown-item"><i class="fas fa-cloud-download-alt"></i> Updates</a></li>
+                                        <div class="dropdown-divider"></div>
+                                        <li><a href="" class="dropdown-item"><i class="fas fa-user-shield"></i> Roles</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                        @{
+                            var email = User.Identity?.Name ?? "Guest";
 
-        <!-- ✅ Main Content -->
-        <div id="admin-content">
-            <nav class="admin-navbar">
-                <div class="user-menu">
-                    @await Html.PartialAsync("_UserMenuPartial")
+                            // Retrieve profile picture from claims, fallback to default
+                        }
+                        <li class="nav-item dropdown">
+                            <div class="nav-dropdown">
+                                <a href="#" id="nav2" class="nav-item nav-link dropdown-toggle text-secondary" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user"></i> <span>@email</span> <i style="font-size: .8em;" class="fas fa-caret-down"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end nav-link-menu">
+                                    <ul class="nav-list">
+                                        <li><a href="" class="dropdown-item"><i class="fas fa-address-card"></i> Profile</a></li>
+                                        <li><a href="" class="dropdown-item"><i class="fas fa-envelope"></i> Messages</a></li>
+                                        <li><a href="" class="dropdown-item"><i class="fas fa-cog"></i> Settings</a></li>
+                                        <div class="dropdown-divider"></div>
+                                        <li><a asp-area="" asp-controller="Auth" asp-action="Logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
             </nav>
-
-            <div class="admin-main">
-                <main>
+            <!-- end of navbar navigation -->
+            <main>
+                <div class="content">
                     @RenderBody()
-                </main>
-            </div>
+                </div>
+            </main>
         </div>
     </div>
 
+
+    <script src="~/adminAssets/vendor/jquery/jquery.min.js" asp-append-version="true"></script>
+    <script src="~/adminAssets/vendor/bootstrap/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
+    <script src="~/adminAssets/vendor/chartsjs/Chart.min.js" asp-append-version="true"></script>
+    <script src="~/adminAssets/js/dashboard-charts.js" asp-append-version="true"></script>
+    <script src="~/adminAssets/js/script.js" asp-append-version="true"></script>
+
     <!-- ✅ Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/admin.js" asp-append-version="true"></script>
+    @* <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script> *@
+    @* <script src="~/js/admin.js" asp-append-version="true"></script> *@
     @await RenderSectionAsync("Scripts", required: false)
 
     <script>
