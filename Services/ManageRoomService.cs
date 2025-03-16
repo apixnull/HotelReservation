@@ -14,9 +14,5 @@ namespace HotelReservation.Services
         }
 
         // ✅ Create a new room
-        public async Task<bool> CreateRoomAsync(Room model)
-        {
-            
-        }
     }
 }

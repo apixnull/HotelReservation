@@ -19,10 +19,20 @@ namespace HotelReservation.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        public IActionResult Rooms()
         {
             return View();
         }
+
+        public IActionResult Service()
+        {
+            return View();
+        }
+        public IActionResult About()
+        {
+            return View();
+        }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

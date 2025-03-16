@@ -1,0 +1,99 @@
+﻿@model HotelReservation.Areas.Admin.ViewModels.CreateRoomViewModel
+
+@{
+    ViewData["Title"] = "Create Room";
+
+}
+
+<link rel="stylesheet" href="~/css/manageRoom.css" asp-append-version="true" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<div class="create-room-container">
+    <!-- Left: Image Section -->
+    <div class="image-section">
+        <div class="overlay"></div>
+    </div>
+
+    <!-- Right: Form Section -->
+    <div class="form-section">
+        <a href="/Admin/ManageRoom/Index" class="back-to-rooms">
+            <i class="fas fa-arrow-left"></i> Back to Rooms
+        </a>
+
+        <div class="form-box">
+            <h2>Create Room</h2>
+            <form asp-action="Create" method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label asp-for="RoomNumber" class="form-label fw-bold"></label>
+                    <input asp-for="RoomNumber" class="form-control" placeholder="Enter room number" />
+                    <span asp-validation-for="RoomNumber" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="RoomType" class="form-label fw-bold"></label>
+                    <select asp-for="RoomType" class="form-select">
+                        <option value="">-- Select Room Type --</option>
+                        <option value="Standard">Standard</option>
+                        <option value="Deluxe">Deluxe</option>
+                        <option value="Suite">Suite</option>
+                    </select>
+                    <span asp-validation-for="RoomType" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Price" class="form-label fw-bold"></label>
+                    <input asp-for="Price" class="form-control" placeholder="Enter price per night" />
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Status" class="form-label fw-bold"></label>
+                    <select asp-for="Status" class="form-select">
+                        <option value="">-- Select Status --</option>
+                        <option value="Available">Available</option>
+                        <option value="Booked">Booked</option>
+                        <option value="Maintenance">Maintenance</option>
+                    </select>
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label fw-bold"></label>
+                    <textarea asp-for="Description" class="form-control" placeholder="Enter description"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Amenities" class="form-label fw-bold"></label>
+                    <textarea asp-for="Amenities" class="form-control" placeholder="List amenities (e.g., WiFi, AC, Breakfast)"></textarea>
+                    <span asp-validation-for="Amenities" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Room Images</label>
+                    <input asp-for="Images" type="file" class="form-control" multiple accept="image/*" />
+                    <span asp-validation-for="Images" class="text-danger"></span>
+                </div>
+                <button type="submit" class="btn btn-primary w-100" id="createRoomButton">Create Room</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const createRoomButton = document.getElementById("createRoomButton");
+        if (createRoomButton) {
+            createRoomButton.addEventListener("click", function (event) {
+                event.preventDefault();
+                Swal.fire({
+                    title: "Confirm Room Creation",
+                    text: "Are you sure you want to create this room?",
+                    icon: "info",
+                    showCancelButton: true,
+                    confirmButtonColor: "#007bff",
+                    cancelButtonColor: "#6c757d",
+                    confirmButtonText: "Yes, create it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        createRoomButton.closest("form").submit();
+                    }
+                });
+            });
+        }
+    });
+</script>

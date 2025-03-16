@@ -145,7 +145,7 @@ namespace HotelReservation.Controllers
 
         /*********************************************/
         // Logout
-        [HttpPost]
+        [HttpGet]
         public async Task<IActionResult> Logout()
         {
             await _authService.SignOutAsync();
