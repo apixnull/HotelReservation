@@ -4,154 +4,101 @@
     ViewData["Title"] = "Manage Rooms";
 }
 
-<!-- ✅ CSS for Styling the Manage Rooms Page -->
-<style>
-    /* ✅ General Styling */
-    body {
-        background: #f8f5f0; /* Soft luxury background */
-        color: #333;
-        font-family: 'Inter', sans-serif;
-    }
+<div class="container mt-4">
+    <h2 class="mb-4">Manage Rooms</h2>
 
-    /* ✅ Page Title */
-    h2 {
-        font-family: 'Playfair Display', serif;
-        color: #2c3e50;
-    }
-
-    /* ✅ Buttons */
-    .btn {
-        border-radius: 6px;
-        padding: 8px 12px;
-        font-weight: 600;
-        transition: 0.3s ease-in-out;
-    }
-
-    .btn-primary {
-        background-color: #d4a373 !important;
-        border: none;
-        color: white;
-    }
-
-        .btn-primary:hover {
-            background-color: #b58346 !important;
-            transform: scale(1.05);
-        }
-
-    .btn-warning {
-        background-color: #e9b44c !important;
-        color: white;
-    }
-
-        .btn-warning:hover {
-            background-color: #d89a3a !important;
-        }
-
-    .btn-danger {
-        background-color: #dc3545 !important;
-        color: white;
-    }
-
-        .btn-danger:hover {
-            background-color: #c82333 !important;
-        }
-
-    /* ✅ Table Styling */
-    .table {
-        background: white;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-        .table thead {
-            background: #2c3e50;
-            color: white;
-        }
-
-        .table th, .table td {
-            padding: 12px;
-            text-align: center;
-        }
-
-    /* ✅ Badge Styling */
-    .badge {
-        font-size: 0.8rem;
-        padding: 5px 10px;
-        border-radius: 6px;
-    }
-
-    /* ✅ Alerts */
-    .alert {
-        border-radius: 6px;
-        padding: 12px;
-    }
-
-    .alert-success {
-        background-color: #d4edda;
-        color: #155724;
-    }
-
-    .alert-danger {
-        background-color: #f8d7da;
-        color: #721c24;
-    }
-</style>
-
-<!-- ✅ Page Title -->
-<h2 class="mb-4">Manage Rooms</h2>
-
-<!-- ✅ Success & Error Messages -->
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["Success"]
+    <!-- ✅ Search & Create Button -->
+    <div class="d-flex justify-content-between mb-3">
+        <input type="text" id="searchInput" class="form-control w-25" placeholder="Search rooms..." onkeyup="searchRooms()">
+        <a asp-action="Create" class="btn btn-success">
+            <i class="fas fa-plus-circle"></i> Create Room
+        </a>
     </div>
-}
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger">
-        @TempData["Error"]
-    </div>
-}
 
-<!-- ✅ Create New Room Button -->
-<p>
-    <a asp-action="Create" class="btn btn-primary">Create New Room</a>
-</p>
-
-<!-- ✅ Room Management Table -->
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Room Number</th>
-            <th>Room Type</th>
-            <th>Price per Night</th>
-            <th>Status</th>
-            <th>Description</th>
-            <th>Amenities</th>
-            <th>Images</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var room in Model)
-        {
+    <!-- ✅ Rooms Table -->
+    <table class="table table-bordered table-hover" id="roomsTable">
+        <thead class="table-dark">
             <tr>
-                <td>@room.RoomNumber</td>
-                <td>@room.RoomType</td>
-                <td>@room.Price.ToString("C")</td>
-                <td>@room.Status</td>
-                <td>@room.Description</td>
-                <td>@room.Amenities</td>
-                <td>
-                    <span class="badge bg-secondary">@room.Images?.Count() images</span>
-                </td>
-                <td>
-                    <a asp-action="Update" asp-route-id="@room.RoomId" class="btn btn-sm btn-warning">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@room.RoomId" class="btn btn-sm btn-danger">Delete</a>
-                </td>
+                <th>Room Number</th>
+                <th>Type</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Description</th>
+                <th>Amenities</th>
+                <th>Images</th>
+                <th>Actions</th>
             </tr>
+        </thead>
+        <tbody>
+            @foreach (var room in Model)
+            {
+                <tr>
+                    <td>@room.RoomNumber</td>
+                    <td>@room.RoomType</td>
+                    <td>@room.Price.ToString("C")</td>
+                    <td>@room.Status</td>
+                    <td>@room.Description</td>
+                    <td>@room.Amenities</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(room.Image1))
+                        {
+                            <img src="@room.Image1" alt="Room Image" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
+                        }
+                        @if (!string.IsNullOrEmpty(room.Image2))
+                        {
+                            <img src="@room.Image2" alt="Room Image" class="rounded ms-2" style="width: 60px; height: 60px; object-fit: cover;">
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@room.RoomId" class="btn btn-warning btn-sm">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <form asp-action="Delete" asp-route-id="@room.RoomId" method="post" class="d-inline" onsubmit="return confirmDelete(this)">
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        function searchRooms() {
+            var searchValue = document.getElementById("searchInput").value.toLowerCase();
+            var rows = document.querySelectorAll("#roomsTable tbody tr");
+
+            rows.forEach(row => {
+                var roomNumber = row.children[0].textContent.toLowerCase();
+                var type = row.children[1].textContent.toLowerCase();
+                var status = row.children[3].textContent.toLowerCase();
+                var amenities = row.children[5].textContent.toLowerCase();
+
+                if (roomNumber.includes(searchValue) || type.includes(searchValue) || status.includes(searchValue) || amenities.includes(searchValue)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
         }
-    </tbody>
-</table>
+         function confirmDelete(form) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "This action cannot be undone!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#6c757d",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+            return false; // Prevent default form submission until user confirms
+        }
+    </script>
+}

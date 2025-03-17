@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HotelReservation.Models
@@ -32,20 +30,22 @@ namespace HotelReservation.Models
 
         [Required]
         [Range(0, 99999.99)]
-        [Column(TypeName = "decimal(10,2)")] // ✅ Fix decimal precision issue
+        [Column(TypeName = "decimal(10,2)")]
         public decimal Price { get; set; }
 
         [Required]
         public RoomStatus Status { get; set; }
 
         public string? Description { get; set; }
-
         public string? Amenities { get; set; }
 
-        // Real-time availability tracking: last status update
         public DateTime LastStatusUpdate { get; set; } = DateTime.UtcNow;
 
-        // ✅ Navigation Property for Room Images (One-to-Many)
-        public virtual List<RoomImage> Images { get; set; } = new List<RoomImage>();
+        // ✅ Store two image paths directly
+        [MaxLength(255)]
+        public string? Image1 { get; set; }
+
+        [MaxLength(255)]
+        public string? Image2 { get; set; }
     }
 }

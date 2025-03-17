@@ -1,0 +1,340 @@
+﻿@model IEnumerable<HotelReservation.Models.Room>
+
+@{
+    ViewData["Title"] = "Available Rooms";
+}
+
+<!-- slider Area Start-->
+<div class="slider-area">
+    <!-- Mobile Menu -->
+    <div class="slider-active dot-style">
+        <div class="single-slider  hero-overly slider-height d-flex align-items-center" data-background="/assets/img/hero/h1_hero.jpg">
+            <div class="container">
+                <div class="row justify-content-center text-center">
+                    <div class="col-xl-9">
+                        <div class="h1-slider-caption">
+                            <h1 data-animation="fadeInUp" data-delay=".4s">top hotel in the city</h1>
+                            <h3 data-animation="fadeInDown" data-delay=".4s">Hotel & Resourt</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="single-slider  hero-overly slider-height d-flex align-items-center" data-background="/assets/img/hero/h1_hero.jpg">
+            <div class="container">
+                <div class="row justify-content-center text-center">
+                    <div class="col-xl-9">
+                        <div class="h1-slider-caption">
+                            <h1 data-animation="fadeInUp" data-delay=".4s">top hotel in the city</h1>
+                            <h3 data-animation="fadeInDown" data-delay=".4s">Hotel & Resourt</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="single-slider  hero-overly slider-height d-flex align-items-center" data-background="/assets/img/hero/h1_hero.jpg">
+            <div class="container">
+                <div class="row justify-content-center text-center">
+                    <div class="col-xl-9">
+                        <div class="h1-slider-caption">
+                            <h1 data-animation="fadeInUp" data-delay=".4s">top hotel in the city</h1>
+                            <h3 data-animation="fadeInDown" data-delay=".4s">Hotel & Resourt</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- slider Area End-->
+<!-- Booking Room Start-->
+<div class="booking-area">
+    <div class="container">
+        <div class="row ">
+            <div class="col-12">
+                <form asp-controller="Booking" asp-action="Search" method="get" id="available-rooms" onsubmit="return validateDates()">
+                    <div class="booking-wrap d-flex justify-content-between align-items-center">
+
+                        <!-- select in date -->
+                        <div class="single-select-box mb-30">
+                            <!-- select out date -->
+                            <div class="boking-tittle">
+                                <span> Check In Date:</span>
+                            </div>
+                            <div class="boking-datepicker">
+                                <input name="CheckInDate" id="datepicker1" value="@Context.Request.Query["CheckInDate"]" placeholder="mm/dd/yy" required />
+                            </div>
+                        </div>
+                        <!-- Single Select Box -->
+                        <div class="single-select-box mb-30">
+                            <!-- select out date -->
+                            <div class="boking-tittle">
+                                <span>Check OutDate:</span>
+                            </div>
+                            <div class="boking-datepicker">
+                                <input name="CheckOutDate" id="datepicker2" value="@Context.Request.Query["CheckOutDate"]" placeholder="mm/dd/yy" required />
+                            </div>
+                        </div>
+                        <!-- Single Select Box -->
+                        <div class="single-select-box mb-30">
+                            <div class="boking-tittle">
+                                <span>Adults:</span>
+                            </div>
+                            <div class="select-this">
+                                <div class="select-itms">
+                                    <select name="Adults" id="select1" class="form-select">
+                                        <option value="1" selected="@(Context.Request.Query["Adults"] == "1")">1</option>
+                                        <option value="2" selected="@(Context.Request.Query["Adults"] == "2")">2</option>
+                                        <option value="3" selected="@(Context.Request.Query["Adults"] == "3")">3</option>
+                                        <option value="4" selected="@(Context.Request.Query["Adults"] == "4")">4</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Single Select Box -->
+                        <div class="single-select-box mb-30">
+                            <div class="boking-tittle">
+                                <span>Children:</span>
+                            </div>
+                            <div class="select-this">
+                                <div class="select-itms">
+                                    <select name="Children" id="select2" class="form-select">
+                                        <option value="0" selected="@(Context.Request.Query["Children"] == "0")">0</option>
+                                        <option value="1" selected="@(Context.Request.Query["Children"] == "1")">1</option>
+                                        <option value="2" selected="@(Context.Request.Query["Children"] == "2")">2</option>
+                                        <option value="3" selected="@(Context.Request.Query["Children"] == "3")">3</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ✅ Room Category (New) -->
+                        <div class="single-select-box mb-30">
+                            <div class="boking-tittle">
+                                <span>Room Category:</span>
+                            </div>
+                            <div class="select-this">
+                                <div class="select-itms">
+                                    <select name="RoomType" id="select3">
+                                        <option value="">Any</option>
+                                        <option value="Standard" selected="@(Context.Request.Query["RoomType"] == "Standard")">Standard</option>
+                                        <option value="Deluxe" selected="@(Context.Request.Query["RoomType"] == "Deluxe")">Deluxe</option>
+                                        <option value="Suite" selected="@(Context.Request.Query["RoomType"] == "Suite")">Suite</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ✅ Submit Button -->
+                        <div class="single-select-box pt-45 mb-30">
+                            <button type="submit" class="btn select-btn">Search Rooms</button>
+                            <input type="hidden" name="scrollTo" value="available-rooms">
+                        </div>
+
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Booking Room End-->
+<!-- ✅ Available Rooms Section -->
+<section class="room-area mt-4">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xl-8">
+                <div class="font-back-tittle mb-45">
+                    <div class="archivment-front">
+                        <h3>Available Rooms</h3>
+                    </div>
+                    <h3 class="archivment-back">Our Rooms</h3>
+                </div>
+            </div>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="alert alert-warning text-center">
+                <strong>No available rooms found for the selected criteria.</strong>
+            </div>
+        }
+        else
+        {
+            <div class="row">
+                @foreach (var room in Model)
+                {
+                    <div class="col-12 mb-4">
+                        <div class="single-room shadow-lg p-4 rounded room-card">
+                            <div class="row align-items-center">
+                                <!-- ✅ Room Image -->
+                                <div class="col-md-5">
+                                    <div class="room-img position-relative">
+                                        <img src="@room.Image1" class="img-fluid w-100 rounded" style="height: 300px; object-fit: cover;" alt="Room Image">
+                                    </div>
+                                </div>
+
+                                <!-- ✅ Room Details -->
+                                <div class="col-md-7">
+                                    <div class="room-caption">
+                                        <h3 class="fw-bold">@room.RoomType</h3>
+                                        <p class="text-success fw-bold">@room.Price.ToString("C") per night</p>
+
+                                        <!-- ⭐ Star Rating -->
+                                        <p class="text-warning">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="far fa-star"></i> <span class="text-muted">(4.0)</span>
+                                        </p>
+
+                                        <p><strong>Description:</strong> <span class="text-muted">@room.Description</span></p>
+                                        <p><strong>Amenities:</strong> <span class="text-muted">@room.Amenities</span></p>
+
+                                        <div class="d-flex justify-content-between mt-3">
+                                            <!-- ✅ See More Button (Opens Modal) -->
+                                            <button class="btn btn-info" onclick="showRoomDetails(@room.RoomId)">
+                                                <i class="fas fa-info-circle"></i> See More
+                                            </button>
+
+                                            <!-- ✅ Book Now Button -->
+                                            <a asp-action="Book" asp-route-id="@room.RoomId" class="btn btn-primary">
+                                                <i class="fas fa-calendar-check"></i> Book Now
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</section>
+
+<!-- ✅ Room Details Modal -->
+<div class="modal fade" id="roomDetailsModal" tabindex="-1" aria-labelledby="roomDetailsLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="roomDetailsLabel">Room Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- ✅ Content will be dynamically loaded via AJAX -->
+                <div id="roomDetailsContent" class="text-center">
+                    <p>Loading room details...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ Styling -->
+<style>
+    .room-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background: white;
+    }
+
+        .room-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+    .room-img {
+        position: relative;
+    }
+
+    .swal-custom-popup {
+        margin-bottom: 100px; /* Pushes it even lower */
+    }
+</style>
+
+
+@section Scripts{
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has("scrollTo")) {
+                document.getElementById(urlParams.get("scrollTo")).scrollIntoView({ behavior: "smooth" });
+            }
+        });
+
+        function showRoomDetails(roomId) {
+            // ✅ Show loading text while fetching details
+            document.getElementById("roomDetailsContent").innerHTML = "<p>Loading room details...</p>";
+
+            // ✅ Fetch room details via AJAX
+            fetch(`/Booking/GetRoomDetails?id=${roomId}`)
+                .then(response => response.text()) // Convert response to text (HTML)
+                .then(data => {
+                    document.getElementById("roomDetailsContent").innerHTML = data;
+                })
+                .catch(error => {
+                    console.error("Error loading room details:", error);
+                    document.getElementById("roomDetailsContent").innerHTML = "<p class='text-danger'>Failed to load room details.</p>";
+                });
+
+            // ✅ Show the modal
+            var modal = new bootstrap.Modal(document.getElementById("roomDetailsModal"));
+            modal.show();
+        }
+    </script>
+    <script>
+        function validateDates() {
+            const checkIn = new Date(document.getElementById("datepicker1").value);
+            const checkOut = new Date(document.getElementById("datepicker2").value);
+
+            if (isNaN(checkIn.getTime()) || isNaN(checkOut.getTime())) {
+                showToast("error", "Invalid Date", "Please select valid check-in and check-out dates.");
+                return false; // Prevent form submission
+            }
+
+            if (checkIn >= checkOut) {
+                showToast("warning", "Invalid Dates", "Check-out date must be after check-in date.");
+                return false; // Prevent form submission
+            }
+
+            return true; // Allow form submission
+        }
+
+        function showToast(type, title, message) {
+            Swal.fire({
+                icon: type,
+                title: title,
+                text: message,
+                position: "top", // ✅ Shows at the bottom-left (or use "bottom" for center)
+                toast: true, // ✅ Keeps it compact
+                showConfirmButton: false,
+                timer: 3000, // Auto close in 3 seconds
+                width: "500px", // ✅ Wider but not too tall
+                padding: "12px",
+                background: getBackgroundColor(type), // ✅ Custom background colors
+                color: "#000", // ✅ Keep text readable
+                customClass: {
+                    popup: "swal-custom-popup",
+                    title: "swal-custom-title",
+                    content: "swal-custom-text"
+                }
+            });
+
+            // ✅ Ensure it stays on top
+            setTimeout(() => {
+                document.querySelector(".swal2-container").style.zIndex = "9999";
+            }, 100); // Small delay to ensure it applies after rendering
+        }
+
+        function getBackgroundColor(type) {
+            switch (type) {
+                case "success": return "#d4edda"; // ✅ Light green
+                case "warning": return "#fff3cd"; // ✅ Light yellow
+                case "error": return "#f8d7da"; // ✅ Light red
+                default: return "#ffffff"; // ✅ Default white
+            }
+        }
+    </script>
+}
