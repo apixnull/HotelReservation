@@ -20,7 +20,6 @@
   <ItemGroup>
     <Folder Include="Areas\Admin\Data\" />
     <Folder Include="Areas\Admin\Models\" />
-    <Folder Include="wwwroot\assets\img\" />
     <Folder Include="wwwroot\assets\js\" />
     <Folder Include="wwwroot\uploads\" />
 	<Folder Include="wwwroot\adminAssets" />

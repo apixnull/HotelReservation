@@ -37,15 +37,22 @@ namespace HotelReservation.Models
         public RoomStatus Status { get; set; }
 
         public string? Description { get; set; }
-        public string? Amenities { get; set; }
 
-        public DateTime LastStatusUpdate { get; set; } = DateTime.UtcNow;
+        public string? Amenities { get; set; } // ✅ Stays as a comma-separated string
 
-        // ✅ Store two image paths directly
+        public DateTime LastStatusUpdate { get; private set; } = DateTime.UtcNow;
+
         [MaxLength(255)]
         public string? Image1 { get; set; }
 
         [MaxLength(255)]
         public string? Image2 { get; set; }
+
+        // ✅ Auto-update LastStatusUpdate when status changes
+        public void UpdateStatus(RoomStatus newStatus)
+        {
+            Status = newStatus;
+            LastStatusUpdate = DateTime.UtcNow;
+        }
     }
 }
