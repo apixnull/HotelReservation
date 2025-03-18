@@ -40,6 +40,10 @@ namespace HotelReservation.Models
 
         public string? Amenities { get; set; } // ✅ Stays as a comma-separated string
 
+        [Required]
+        [Range(1, 10)]
+        public int MaxOccupancy { get; set; } // ✅ Added Max Occupancy
+
         public DateTime LastStatusUpdate { get; private set; } = DateTime.UtcNow;
 
         [MaxLength(255)]
@@ -47,12 +51,5 @@ namespace HotelReservation.Models
 
         [MaxLength(255)]
         public string? Image2 { get; set; }
-
-        // ✅ Auto-update LastStatusUpdate when status changes
-        public void UpdateStatus(RoomStatus newStatus)
-        {
-            Status = newStatus;
-            LastStatusUpdate = DateTime.UtcNow;
-        }
     }
 }

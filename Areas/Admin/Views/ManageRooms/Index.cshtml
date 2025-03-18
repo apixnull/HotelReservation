@@ -25,6 +25,7 @@
                 <th>Status</th>
                 <th>Description</th>
                 <th>Amenities</th>
+                <th>Max Occupancy</th>
                 <th>Images</th>
                 <th>Actions</th>
             </tr>
@@ -39,6 +40,7 @@
                     <td>@room.Status</td>
                     <td>@room.Description</td>
                     <td>@room.Amenities</td>
+                    <td>@room.MaxOccupancy</td>
                     <td>
                         @if (!string.IsNullOrEmpty(room.Image1))
                         {

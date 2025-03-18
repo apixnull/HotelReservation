@@ -1,6 +1,5 @@
 ﻿using HotelReservation.Data;
 using HotelReservation.Models;
-using HotelReservation.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,7 +16,8 @@ namespace HotelReservation.Controllers
         }
 
         // ✅ Search for available rooms
-        public async Task<IActionResult> Search(DateTime CheckInDate, DateTime CheckOutDate, int Adults, int Children, string? RoomType)
+        // ✅ Search for available rooms
+        public async Task<IActionResult> Search(int MaxOccupancy, string? RoomType)
         {
             // 🔹 Query available rooms
             var query = _context.Rooms
@@ -28,11 +28,15 @@ namespace HotelReservation.Controllers
                 query = query.Where(r => r.RoomType == parsedType);
             }
 
+            // ✅ Filter by Max Occupancy (Assuming you have a field for it)
+            query = query.Where(r => r.MaxOccupancy <= MaxOccupancy);
+
             var availableRooms = await query.ToListAsync();
 
             // ✅ Redirect with Fragment to Scroll
-            return View( "Search" ,availableRooms);
+            return View("Search", availableRooms);
         }
+
 
         public async Task<IActionResult> GetRoomDetails(int id)
         {

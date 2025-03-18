@@ -27,6 +27,12 @@
                 </div>
 
                 <div class="mb-3">
+                    <label asp-for="MaxOccupancy" class="form-label">Max Occupancy</label>
+                    <input asp-for="MaxOccupancy" class="form-control" />
+                    <span class="text-danger" asp-validation-for="MaxOccupancy"></span>
+                </div>
+
+                <div class="mb-3">
                     <label asp-for="Price" class="form-label">Price</label>
                     <input asp-for="Price" type="number" class="form-control" placeholder="Enter Price" />
                     <span class="text-danger" asp-validation-for="Price"></span>

@@ -30,7 +30,8 @@ namespace HotelReservation.Services
                 Price = model.Price,
                 Status = model.Status,
                 Description = model.Description,
-                Amenities = model.Amenities
+                Amenities = model.Amenities,
+                MaxOccupancy = model.MaxOccupancy // ✅ Added Max Occupancy
             };
 
             _context.Rooms.Add(newRoom);
@@ -76,6 +77,7 @@ namespace HotelReservation.Services
             room.Status = model.Status;
             room.Description = model.Description;
             room.Amenities = model.Amenities;
+            room.MaxOccupancy = model.MaxOccupancy; // ✅ Added Max Occupancy
 
             // Define folder path based on room number
             string folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "room_pictures", room.RoomNumber);

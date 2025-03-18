@@ -1,9 +1,7 @@
 ﻿using HotelReservation.Areas.Admin.ViewModels;
-using HotelReservation.Models;
 using HotelReservation.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace HotelReservation.Areas.Admin.Controllers
 {
@@ -75,8 +73,9 @@ namespace HotelReservation.Areas.Admin.Controllers
                 Status = room.Status,
                 Description = room.Description,
                 Amenities = room.Amenities,
-                //ExistingImage1 = room.Image1,
-                //ExistingImage2 = room.Image2
+                MaxOccupancy= room.MaxOccupancy,
+                ExistingImage1 = room.Image1,
+                ExistingImage2 = room.Image2
             };
 
             return View(model);

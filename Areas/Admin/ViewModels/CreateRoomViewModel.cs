@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using HotelReservation.Models;
 
-
 namespace HotelReservation.Areas.Admin.ViewModels
 {
     public class CreateRoomViewModel
@@ -19,6 +18,10 @@ namespace HotelReservation.Areas.Admin.ViewModels
 
         [Required(ErrorMessage = "Room Status is required.")]
         public RoomStatus Status { get; set; }
+
+        [Required(ErrorMessage = "Max Occupancy is required.")]
+        [Range(1, 10, ErrorMessage = "Max Occupancy must be between 1 and 10.")]
+        public int MaxOccupancy { get; set; } // ✅ Added Max Occupancy
 
         [MaxLength(500, ErrorMessage = "Description cannot exceed 500 characters.")]
         public string? Description { get; set; }

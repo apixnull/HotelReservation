@@ -75,34 +75,21 @@
                                 <input name="CheckOutDate" id="datepicker2" value="@Context.Request.Query["CheckOutDate"]" placeholder="mm/dd/yy" required />
                             </div>
                         </div>
-                        <!-- Single Select Box -->
+
+                        <!-- ✅ Max Occupancy (Replaces Adults & Children) -->
                         <div class="single-select-box mb-30">
                             <div class="boking-tittle">
-                                <span>Adults:</span>
+                                <span>Max Occupancy:</span>
                             </div>
                             <div class="select-this">
                                 <div class="select-itms">
-                                    <select name="Adults" id="select1" class="form-select">
-                                        <option value="1" selected="@(Context.Request.Query["Adults"] == "1")">1</option>
-                                        <option value="2" selected="@(Context.Request.Query["Adults"] == "2")">2</option>
-                                        <option value="3" selected="@(Context.Request.Query["Adults"] == "3")">3</option>
-                                        <option value="4" selected="@(Context.Request.Query["Adults"] == "4")">4</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Single Select Box -->
-                        <div class="single-select-box mb-30">
-                            <div class="boking-tittle">
-                                <span>Children:</span>
-                            </div>
-                            <div class="select-this">
-                                <div class="select-itms">
-                                    <select name="Children" id="select2" class="form-select">
-                                        <option value="0" selected="@(Context.Request.Query["Children"] == "0")">0</option>
-                                        <option value="1" selected="@(Context.Request.Query["Children"] == "1")">1</option>
-                                        <option value="2" selected="@(Context.Request.Query["Children"] == "2")">2</option>
-                                        <option value="3" selected="@(Context.Request.Query["Children"] == "3")">3</option>
+                                    <select name="MaxOccupancy" id="select1" class="form-select">
+                                        <option value="1" selected="@(Context.Request.Query["MaxOccupancy"] == "1")">1</option>
+                                        <option value="2" selected="@(Context.Request.Query["MaxOccupancy"] == "2")">2</option>
+                                        <option value="3" selected="@(Context.Request.Query["MaxOccupancy"] == "3")">3</option>
+                                        <option value="4" selected="@(Context.Request.Query["MaxOccupancy"] == "4")">4</option>
+                                        <option value="5" selected="@(Context.Request.Query["MaxOccupancy"] == "5")">5</option>
+                                        <option value="6" selected="@(Context.Request.Query["MaxOccupancy"] == "6")">6</option>
                                     </select>
                                 </div>
                             </div>
@@ -130,7 +117,6 @@
                             <button type="submit" class="btn select-btn">Search Rooms</button>
                             <input type="hidden" name="scrollTo" value="available-rooms">
                         </div>
-
 
                     </div>
                 </form>
