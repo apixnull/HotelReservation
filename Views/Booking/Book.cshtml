@@ -1,91 +1,121 @@
-﻿@model HotelReservation.ViewModels.BookingViewModel
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Book a Room</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
 
-@{
-    ViewData["Title"] = "Book a Room";
-}
+        .container-full {
+            display: flex;
+            height: 100vh;
+        }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-lg">
-                <div class="card-header bg-primary text-white text-center">
-                    <h3>Book a Room</h3>
+        .room-gallery {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .booking-details {
+            flex: 1;
+            padding: 40px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: -5px 0px 15px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container-full">
+        <!-- Image Slider -->
+        <div class="room-gallery">
+            <div id="roomCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <img src="@Model.Image1" class="d-block w-100" alt="Room Image 1">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="@Model.Image2" class="d-block w-100" alt="Room Image 2">
+                    </div>
                 </div>
-                <div class="card-body">
-                    <form asp-action="Book" method="post">
-
-                        <!-- Hidden Room ID -->
-                        <input type="hidden" asp-for="RoomId" />
-
-                        <!-- User Details (Auto-filled if logged in) -->
-                        <div class="mb-3">
-                            <label asp-for="GuestName" class="form-label">Full Name</label>
-                            <input asp-for="GuestName" class="form-control" placeholder="Enter your full name" />
-                            <span class="text-danger" asp-validation-for="GuestName"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="GuestEmail" class="form-label">Email</label>
-                            <input asp-for="GuestEmail" class="form-control" placeholder="Enter your email" />
-                            <span class="text-danger" asp-validation-for="GuestEmail"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="GuestPhone" class="form-label">Phone Number</label>
-                            <input asp-for="GuestPhone" class="form-control" placeholder="Enter your phone number" />
-                            <span class="text-danger" asp-validation-for="GuestPhone"></span>
-                        </div>
-
-                        <!-- Check-in and Check-out Dates -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label asp-for="CheckInDate" class="form-label">Check-in Date</label>
-                                    <input asp-for="CheckInDate" class="form-control" type="date" />
-                                    <span class="text-danger" asp-validation-for="CheckInDate"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label asp-for="CheckOutDate" class="form-label">Check-out Date</label>
-                                    <input asp-for="CheckOutDate" class="form-control" type="date" />
-                                    <span class="text-danger" asp-validation-for="CheckOutDate"></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Occupancy Details -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label asp-for="Adults" class="form-label">Adults</label>
-                                    <input asp-for="Adults" class="form-control" type="number" min="1" />
-                                    <span class="text-danger" asp-validation-for="Adults"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label asp-for="Children" class="form-label">Children</label>
-                                    <input asp-for="Children" class="form-control" type="number" min="0" />
-                                    <span class="text-danger" asp-validation-for="Children"></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Total Price -->
-                        <div class="mb-3">
-                            <label asp-for="TotalPrice" class="form-label">Total Price</label>
-                            <input asp-for="TotalPrice" class="form-control" readonly />
-                        </div>
-
-                        <button type="submit" class="btn btn-success w-100">Confirm Booking</button>
-                    </form>
-                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#roomCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#roomCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                </button>
             </div>
         </div>
-    </div>
-</div>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+        <!-- Booking Form -->
+        <div class="booking-details">
+            <h2>@Model.RoomType Room</h2>
+            <p>@Model.Description</p>
+            <p><strong>Price per night:</strong> ₱@Model.Price</p>
+            <p><strong>Max Occupancy:</strong> @Model.MaxOccupancy guests</p>
+            <hr>
+            <h4>Reserve Your Stay</h4>
+            <form asp-controller="Booking" asp-action="Book" method="post">
+                <input type="hidden" name="RoomId" value="@Model.RoomId" />
+                <div class="mb-3">
+                    <label class="form-label">Check-In Date</label>
+                    <input id="checkInDate" name="CheckInDate" class="form-control" type="date" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Check-Out Date</label>
+                    <input id="checkOutDate" name="CheckOutDate" class="form-control" type="date" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Total Price (including tax):</label>
+                    <input id="totalPrice" class="form-control" readonly>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Proceed to Checkout</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const checkInInput = document.getElementById("checkInDate");
+            const checkOutInput = document.getElementById("checkOutDate");
+            const totalPriceInput = document.getElementById("totalPrice");
+            const pricePerNight = parseFloat("@Model.Price");
+            const taxRate = 0.10; // 10% tax
+
+            function updateTotalPrice() {
+                const checkIn = new Date(checkInInput.value);
+                const checkOut = new Date(checkOutInput.value);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                if (checkIn < today) {
+                    Swal.fire("Invalid Date", "Check-in date cannot be in the past!", "error");
+                    checkInInput.value = "";
+                    return;
+                }
+                if (checkOut <= checkIn) {
+                    Swal.fire("Invalid Date", "Check-out date must be after check-in date!", "error");
+                    checkOutInput.value = "";
+                    return;
+                }
+
+                const nights = Math.round((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+                const totalCost = nights * pricePerNight;
+                const totalWithTax = totalCost + (totalCost * taxRate);
+                totalPriceInput.value = `₱${totalWithTax.toFixed(2)}`;
+            }
+
+            checkInInput.addEventListener("change", updateTotalPrice);
+            checkOutInput.addEventListener("change", updateTotalPrice);
+        });
+    </script>
+</body>
+</html>

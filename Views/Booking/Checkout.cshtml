@@ -1,0 +1,99 @@
+﻿@model HotelReservation.ViewModels.CheckoutViewModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Checkout - Confirm Your Reservation</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .checkout-container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .room-image {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .checkout-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="checkout-container">
+            <h2 class="checkout-header">Confirm Your Reservation</h2>
+
+            <!-- Room Details -->
+            <div class="mb-3">
+                <img src="@Model.Room.Image1" class="room-image" alt="Room Image">
+                <h4>@Model.Room.RoomType</h4>
+                <p>@Model.Room.Description</p>
+                <p><strong>Price per night:</strong> ₱@Model.Room.Price</p>
+                <p><strong>Check-in:</strong> @Model.CheckInDate.ToString("MMMM dd, yyyy")</p>
+                <p><strong>Check-out:</strong> @Model.CheckOutDate.ToString("MMMM dd, yyyy")</p>
+                <p><strong>Total Price:</strong> ₱@Model.TotalPrice.ToString("N2")</p>
+            </div>
+
+            <!-- Checkout Form -->
+            <form asp-controller="Booking" asp-action="Checkout" method="post">
+                <input type="hidden" asp-for="RoomId">
+                <input type="hidden" asp-for="CheckInDate">
+                <input type="hidden" asp-for="CheckOutDate">
+                <input type="hidden" asp-for="TotalPrice">
+
+                <div class="mb-3">
+                    <label class="form-label">Full Name</label>
+                    <input asp-for="GuestName" class="form-control" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input asp-for="GuestEmail" type="email" class="form-control" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Phone Number</label>
+                    <input asp-for="GuestPhone" type="tel" class="form-control" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Adults</label>
+                    <input asp-for="Adults" type="number" class="form-control" min="1" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Children</label>
+                    <input asp-for="Children" type="number" class="form-control" min="0">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Special Requests (Optional)</label>
+                    <textarea asp-for="SpecialRequest" class="form-control" rows="3"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Confirm Reservation</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

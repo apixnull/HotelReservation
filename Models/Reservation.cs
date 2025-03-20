@@ -17,7 +17,6 @@ namespace HotelReservation.Models
 
         [Required]
         public int RoomId { get; set; }
-
         [ForeignKey("RoomId")]
         public Room? Room { get; set; }
 
@@ -48,9 +47,21 @@ namespace HotelReservation.Models
         [Required]
         public ReservationStatus Status { get; set; } = ReservationStatus.Pending;
 
-        public Payment? Payment { get; set; } // ✅ Remove ForeignKey here
+        public Payment? Payment { get; set; } // ✅ Payment relationship remains
+
+        // 🔹 New Fields Added Below 🔹
+        [Required]
+        public string BookingReference { get; set; } = Guid.NewGuid().ToString("N").Substring(0, 10).ToUpper();
+
+        public bool IsPaid { get; set; } = false;
+
+        public string? SpecialRequest { get; set; }
+
+        public string? CancellationReason { get; set; }
+
+        public DateTime? ActualCheckIn { get; set; }
+        public DateTime? ActualCheckOut { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
-
 }
