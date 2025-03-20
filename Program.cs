@@ -16,6 +16,7 @@ namespace HotelReservation
             // Add logging
             builder.Logging.ClearProviders();
             builder.Logging.AddConsole();
+          
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
@@ -41,11 +42,15 @@ namespace HotelReservation
 
             // Add services
             builder.Services.AddHttpContextAccessor();
+            builder.Services.AddHttpClient<VerimailService>();
+            builder.Services.AddScoped<VerimailService>();
             builder.Services.AddScoped<AuthService>();
             builder.Services.AddScoped<UserRegistrationService>();
+            builder.Services.AddScoped<EmailService>();
             builder.Services.AddScoped<ManageUserService>();
             builder.Services.AddAuthServices();
             builder.Services.AddScoped<ManageRoomService>();
+            builder.Services.AddScoped<BookingService>();
 
             var app = builder.Build();
 

@@ -38,13 +38,11 @@ namespace HotelReservation.Models
 
         public string? Description { get; set; }
 
-        public string? Amenities { get; set; } // ✅ Stays as a comma-separated string
-
         [Required]
         [Range(1, 10)]
         public int MaxOccupancy { get; set; } // ✅ Added Max Occupancy
 
-        public DateTime LastStatusUpdate { get; private set; } = DateTime.UtcNow;
+        public DateTime LastStatusUpdate { get; set; } = DateTime.UtcNow;
 
         [MaxLength(255)]
         public string? Image1 { get; set; }

@@ -1,90 +1,68 @@
 ﻿@model HotelReservation.ViewModels.RegisterFormModel
 
 @{
-    ViewData["Title"] = "Register";
-    Layout = null; // No layout
+    Layout = "_AuthLayout";
 }
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Register - Luxury Hotel</title>
-    <!-- Use the same CSS as the login page for a consistent look -->
-    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
-    <!-- ✅ Bootstrap & FontAwesome -->
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-    <!-- SweetAlert for alert messages -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-</head>
-<body>
-    <!-- Back to Home Button -->
-    <a href="/" class="back-to-home">
-        <i class="fas fa-arrow-left"></i> Back to Home
-    </a>
 
-    <!-- Left Section: Registration Form -->
-    <div class="login-section">
-        <div class="hotel-logo">
-            <i class="fas fa-hotel"></i> Luxury Hotel
-        </div>
-
-        <div class="login-form">
-            <h2>Create Your Account</h2>
-
-            <!-- Optional: Social Media Registration Icons -->
-            <div class="social-icons">
-                <a href="#" class="facebook"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" class="google"><i class="fab fa-google"></i></a>
-                <a href="#" class="twitter"><i class="fab fa-twitter"></i></a>
+<section class="signup">
+    <div class="container">
+        <div class="signup-content">
+            <div class="signup-form">
+                <h2 class="form-title">Sign up</h2>
+                <form asp-area="" asp-controller="Auth" asp-action="Register" class="register-form" id="register-form">
+                    <div class="form-group">
+                        <label asp-for="Email"><i class="zmdi zmdi-email"></i></label>
+                        <input asp-for="Email" placeholder="Your Email" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Password"><i class="zmdi zmdi-lock"></i></label>
+                        <input asp-for="Password" placeholder="Your Password" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ConfirmPassword"><i class="zmdi zmdi-lock-outline"></i></label>
+                        <input asp-for="ConfirmPassword" placeholder="Repeat your password" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <input type="checkbox" name="agree-term" id="agree-term" class="agree-term" />
+                        <label for="agree-term" class="label-agree-term"><span><span></span></span>I agree all statements in  <a href="#" class="term-service">Terms of service</a></label>
+                    </div>
+                    <div class="form-group form-button">
+                        <input type="submit" id="registerButton" class="form-submit" value="Register" />
+                    </div>
+                </form>
             </div>
-
-            <form asp-action="Register" method="post">
-                <div class="mb-3">
-                    <input asp-for="Email" class="form-control" placeholder="Enter your email" />
-                    <span asp-validation-for="Email" class="text-danger"></span>
-                </div>
-
-                <div class="mb-3">
-                    <input asp-for="Password" type="password" class="form-control" placeholder="Enter your password" />
-                    <span asp-validation-for="Password" class="text-danger"></span>
-                </div>
-
-                <div class="mb-3">
-                    <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Confirm your password" />
-                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-                </div>
-
-                <button type="submit" class="btn btn-gold w-100" id="registerButton">Register</button>
-            </form>
-
-            <div class="text-center mt-3">
-                <span>Already have an account?</span>
-                <a href="/Auth/Login" class="text-decoration-none fw-bold">Login here</a>
+            <div class="signup-image">
+                <figure><img src="/authAsset/images/signup-image.jpg" alt="sing up image"></figure>
+                <a asp-area="" asp-controller="Auth" asp-action="Login" class="signup-image-link">Login Here</a>
             </div>
         </div>
     </div>
-
-    <!-- Right Section: Hotel Image -->
-    <div class="image-section">
-        <div class="image-overlay"></div>
-    </div>
-
-    <!-- Scripts -->
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <partial name="_ValidationScriptsPartial" />
-    <script src="~/js/site.js" asp-append-version="true"></script>
+</section>
 
 
+@section Scripts {
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+            document.addEventListener("DOMContentLoaded", function () {
             const registerButton = document.getElementById("registerButton");
+            const agreeTerm = document.getElementById("agree-term");
 
             if (registerButton) {
                 registerButton.addEventListener("click", function (event) {
                     event.preventDefault(); // Prevent form submission
+
+                    if (!agreeTerm.checked) {
+                        Swal.fire({
+                            title: "Terms Required",
+                            text: "You must agree to the Terms of Service.",
+                            icon: "warning",
+                            confirmButtonColor: "#b9935a"
+                        });
+                        return;
+                    }
 
                     Swal.fire({
                         title: "Confirm Registration",
@@ -96,63 +74,12 @@
                         confirmButtonText: "Yes, register!"
                     }).then((result) => {
                         if (result.isConfirmed) {
+                            registerButton.disabled = true; // ✅ Disable button
                             registerButton.closest("form").submit(); // Submit the form
                         }
                     });
                 });
             }
         });
-
-        document.addEventListener("DOMContentLoaded", function () {
-            function showAlert(type, title, message) {
-                Swal.fire({
-                    icon: type,
-                    title: title,
-                    text: message,
-                    position: "top", // ✅ Display just below the navbar
-                    toast: true, // ✅ Keeps it compact
-                    showConfirmButton: false,
-                    timer: 3000, // Auto close in 3 seconds
-                    width: "500px", // ✅ Wider but not too tall
-                    padding: "12px",
-                    background: getBackgroundColor(type), // ✅ Custom background colors
-                    color: "#000", // ✅ Keep text readable
-                    customClass: {
-                        popup: "swal-custom-popup",
-                        title: "swal-custom-title",
-                        content: "swal-custom-text"
-                    }
-                });
-            }
-
-            function getBackgroundColor(type) {
-                switch (type) {
-                    case "success": return "#d4edda"; // ✅ Light Green
-                    case "error": return "#f8d7da"; // ✅ Light Red
-                    case "warning": return "#fff3cd"; // ✅ Light Yellow
-                    default: return "#ffffff"; // Default
-                }
-            }
-
-            // Success Alert
-            var successMessage = "@TempData["Success"]";
-            if (successMessage) {
-                showAlert("success", "Success!", successMessage);
-            }
-
-            // Error Alert
-            var errorMessage = "@TempData["Error"]";
-            if (errorMessage) {
-                showAlert("error", "Oops!", errorMessage);
-            }
-
-            // Warning Alert
-            var warningMessage = "@Context.Request.Query["warning"]";
-            if (warningMessage) {
-                showAlert("warning", "Warning!", warningMessage);
-            }
-        });
     </script>
-
-</body>
-</html>
+}

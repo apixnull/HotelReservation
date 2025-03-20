@@ -1,0 +1,91 @@
+﻿@model HotelReservation.ViewModels.BookingViewModel
+
+@{
+    ViewData["Title"] = "Book a Room";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3>Book a Room</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Book" method="post">
+
+                        <!-- Hidden Room ID -->
+                        <input type="hidden" asp-for="RoomId" />
+
+                        <!-- User Details (Auto-filled if logged in) -->
+                        <div class="mb-3">
+                            <label asp-for="GuestName" class="form-label">Full Name</label>
+                            <input asp-for="GuestName" class="form-control" placeholder="Enter your full name" />
+                            <span class="text-danger" asp-validation-for="GuestName"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="GuestEmail" class="form-label">Email</label>
+                            <input asp-for="GuestEmail" class="form-control" placeholder="Enter your email" />
+                            <span class="text-danger" asp-validation-for="GuestEmail"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="GuestPhone" class="form-label">Phone Number</label>
+                            <input asp-for="GuestPhone" class="form-control" placeholder="Enter your phone number" />
+                            <span class="text-danger" asp-validation-for="GuestPhone"></span>
+                        </div>
+
+                        <!-- Check-in and Check-out Dates -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="CheckInDate" class="form-label">Check-in Date</label>
+                                    <input asp-for="CheckInDate" class="form-control" type="date" />
+                                    <span class="text-danger" asp-validation-for="CheckInDate"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="CheckOutDate" class="form-label">Check-out Date</label>
+                                    <input asp-for="CheckOutDate" class="form-control" type="date" />
+                                    <span class="text-danger" asp-validation-for="CheckOutDate"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Occupancy Details -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Adults" class="form-label">Adults</label>
+                                    <input asp-for="Adults" class="form-control" type="number" min="1" />
+                                    <span class="text-danger" asp-validation-for="Adults"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Children" class="form-label">Children</label>
+                                    <input asp-for="Children" class="form-control" type="number" min="0" />
+                                    <span class="text-danger" asp-validation-for="Children"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Total Price -->
+                        <div class="mb-3">
+                            <label asp-for="TotalPrice" class="form-label">Total Price</label>
+                            <input asp-for="TotalPrice" class="form-control" readonly />
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">Confirm Booking</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

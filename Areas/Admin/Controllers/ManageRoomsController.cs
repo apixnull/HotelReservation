@@ -72,7 +72,6 @@ namespace HotelReservation.Areas.Admin.Controllers
                 Price = room.Price,
                 Status = room.Status,
                 Description = room.Description,
-                Amenities = room.Amenities,
                 MaxOccupancy= room.MaxOccupancy,
                 ExistingImage1 = room.Image1,
                 ExistingImage2 = room.Image2

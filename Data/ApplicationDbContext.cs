@@ -6,16 +6,24 @@ namespace HotelReservation.Data
     public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
+
         public DbSet<User> Users { get; set; }
-        public DbSet<Room> Rooms { get; set; }  // ✅ Register 
+        public DbSet<Room> Rooms { get; set; }
+        public DbSet<Reservation> Reservations { get; set; }  // ✅ Register Reservations Table
+        public DbSet<Payment> Payments { get; set; }  // ✅ Register Payments Table
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Enforce unique constraint on the Email property in the Users table.
+            // ✅ Enforce unique constraint on User Email
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Email)
+                .IsUnique();
+
+            // ✅ Enforce unique constraint on RoomNumber in Rooms
+            modelBuilder.Entity<Room>()
+                .HasIndex(r => r.RoomNumber)
                 .IsUnique();
 
             // ✅ Explicitly define decimal precision for Room Price
@@ -23,10 +31,31 @@ namespace HotelReservation.Data
                 .Property(r => r.Price)
                 .HasColumnType("decimal(10,2)");
 
-            // ✅ Enforce unique constraint on RoomNumber in Rooms table
-            modelBuilder.Entity<Room>()
-                .HasIndex(r => r.RoomNumber)
-                .IsUnique();
+            // ✅ Define decimal precision for Payments
+            modelBuilder.Entity<Payment>()
+                .Property(p => p.Amount)
+                .HasColumnType("decimal(10,2)");
+
+            // ✅ Configure Foreign Key Relationship: Reservation ↔ Room
+            modelBuilder.Entity<Reservation>()
+                .HasOne(r => r.Room)
+                .WithMany()
+                .HasForeignKey(r => r.RoomId)
+                .OnDelete(DeleteBehavior.SetNull);  // If room is deleted, reservation remains but RoomId becomes NULL
+
+            // ✅ Configure Foreign Key Relationship: Reservation ↔ User (Nullable for Guests)
+            modelBuilder.Entity<Reservation>()
+                .HasOne(r => r.User)
+                .WithMany()
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            // ✅ Configure Foreign Key Relationship: Reservation ↔ Payment
+            modelBuilder.Entity<Reservation>()
+                .HasOne(r => r.Payment)
+                .WithOne(p => p.Reservation)
+                .HasForeignKey<Payment>(p => p.ReservationId)
+                .OnDelete(DeleteBehavior.Cascade);  // If reservation is deleted, payment is also deleted
         }
     }
-}   
+}

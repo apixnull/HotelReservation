@@ -32,6 +32,7 @@ namespace HotelReservation.Extensions
                             return Task.CompletedTask;
                         }
                     };
+
                 });
 
             services.AddAuthorization(options =>

@@ -281,15 +281,30 @@
                 showAlert("error", "Oops!", errorMessage);
             }
 
-            // Warning Alert
+            // Warning Alert 
+             var warningMessage = "@TempData["Warning"]";
+             if (warningMessage) {
+                showAlert("warning", "Attention!", warningMessage);
+             }   
+
+            // Warning Alert 
             var warningMessage = "@Context.Request.Query["warning"]";
             if (warningMessage) {
                 showAlert("warning", "Warning!", warningMessage);
             }
         });
+
+    
     </script>
 
-
+    <script>
+        window.onpageshow = function (event) {
+            if (event.persisted || window.performance && window.performance.navigation.type === 2) {
+                location.reload();
+            }
+        };
+    </script>
 
 </body>
 </html>
+

@@ -1,0 +1,103 @@
+﻿@model HotelReservation.ViewModels.EmailVerificationViewModel
+
+@{
+	Layout = "_AuthLayout";
+}
+
+<!-- Verifiy Email Form-->
+<section class="sign-in">
+    <div class="container">
+        <div class="signin-content">
+            <div class="signin-image">
+                <figure><img src="/authAsset/images/signin-image.jpg" alt="sing up image"></figure>
+            </div>
+
+            <div class="signin-form">
+                <h2 class="form-title">Verify Your Email</h2>
+                <form method="POST" class="register-form" id="login-form">
+                    <div class="form-group">
+                        <label asp-for="Email"><i class="zmdi zmdi-account material-icons-name"></i></label>
+                        <input asp-for="Email" asp-for="Code" value="@Model.Email" readonly />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Code"><i class="zmdi zmdi-lock"></i></label>
+                        <input asp-for="Code" placeholder="Enter 6-digit code" />
+                        <span asp-validation-for="Code" class="text-danger"></span>
+                    </div>
+                    <div class="form-group form-button">
+                        <input type="submit" class="form-submit" value="Verifiy" />
+                    </div>
+                </form>
+
+                <!-- Resend Verification Code with Cooldown -->
+                <form method="post" asp-action="ResendVerification">
+                    <input type="hidden" name="email" value="@Model.Email" />
+                    <button type="button" id="resendBtn" class="btn btn-secondary w-100 mt-3" disabled>Resend Code</button>
+                </form>
+                <div class="resend-info">You can resend the code after <span id="timer">30</span> seconds.</div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+      
+
+
+@section Scripts {
+    <script>
+       document.addEventListener("DOMContentLoaded", function () {
+        let resendBtn = document.getElementById("resendBtn");
+        let timerText = document.getElementById("timer");
+
+        // Check local storage for existing timer
+        let countdown = localStorage.getItem("resendCountdown") || 30;
+
+        function startCooldown() {
+            resendBtn.disabled = true;
+            let interval = setInterval(() => {
+                timerText.innerText = countdown;
+                countdown--;
+
+                // Save timer state to localStorage
+                localStorage.setItem("resendCountdown", countdown);
+
+                if (countdown < 0) {
+                    clearInterval(interval);
+                    resendBtn.innerText = "Resend Code";
+                    resendBtn.disabled = false;
+                    timerText.innerText = "0";
+                    localStorage.removeItem("resendCountdown"); // Remove when expired
+                }
+            }, 1000);
+        }
+
+        if (countdown > 0) {
+            startCooldown();
+        }
+
+        resendBtn.addEventListener("click", function (event) {
+            event.preventDefault(); // Prevent full page reload
+
+            resendBtn.disabled = true;
+            resendBtn.innerText = "Sending...";
+
+            fetch(`/Auth/ResendVerification?email=${encodeURIComponent("@Model.Email")}`, {
+                method: "GET"
+            }).then(response => response.text())
+              .then(data => {
+                  Swal.fire("Success", "New verification code sent!", "success");
+                  countdown = 30;
+                  localStorage.setItem("resendCountdown", countdown);
+                  startCooldown();
+              }).catch(error => {
+                  Swal.fire("Error", "Failed to resend code. Try again later.", "error");
+                  resendBtn.disabled = false;
+                  resendBtn.innerText = "Resend Code";
+              });
+        });
+    });
+    </script>
+}

@@ -19,6 +19,14 @@ namespace HotelReservation.Services
             _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
         }
 
+
+
+
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        // Authenticate User
+
         public async Task<bool> AuthenticateUser(LoginFormModel model)
         {
             var httpContext = _httpContextAccessor.HttpContext;
@@ -50,11 +58,18 @@ namespace HotelReservation.Services
             Console.WriteLine($"✅ User {user.Email} authenticated successfully.");
 
             // ✅ Debugging: Check if authentication cookie is set in response
-            var cookieHeader = httpContext.Response.Headers["Set-Cookie"].ToString();
+            var cookieHeader = httpContext.Response.Headers["Set-Cookie"].ToString(); 
 
             return !string.IsNullOrEmpty(cookieHeader);
         }
 
+
+
+
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        // Signout User
         public async Task SignOutAsync()
         {
             var httpContext = _httpContextAccessor.HttpContext;
@@ -63,10 +78,19 @@ namespace HotelReservation.Services
                 Console.WriteLine("🚨 ERROR: HttpContext is null. Cannot sign out.");
                 return;
             }
+
             await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
             Console.WriteLine("✅ User signed out successfully.");
         }
 
+
+
+
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        // Helper Methods
         private ClaimsPrincipal CreateUserClaimsPrincipal(User user)
         {
             var claims = new List<Claim>

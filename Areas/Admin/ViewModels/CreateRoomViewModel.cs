@@ -27,7 +27,6 @@ namespace HotelReservation.Areas.Admin.ViewModels
         public string? Description { get; set; }
 
         [MaxLength(255, ErrorMessage = "Amenities list cannot exceed 255 characters.")]
-        public string? Amenities { get; set; }
 
         // ✅ Upload fields for images
         [Display(Name = "Room Image 1")]

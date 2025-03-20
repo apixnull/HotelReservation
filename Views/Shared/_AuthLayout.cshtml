@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Luxury Hotel</title>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <!-- Font Icon -->
+    <link rel="stylesheet" href="/authAsset/fonts/material-icon/css/material-design-iconic-font.min.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- Main css -->
+    <link rel="stylesheet" href="/authAsset/css/style.css" asp-append-version="true">
+
+    <!-- put this for nice alert messages -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+    <div class="main">
+        @RenderBody()
+    </div>
+
+    <!-- JS -->
+    <script src="/authAsset/vendor/jquery/jquery.min.js" asp-append-version="true"></script>
+    <script src="/authAsset/js/main.js" asp-append-version="true"></script>
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            function showAlert(type, title, message) {
+                Swal.fire({
+                    icon: type,
+                    title: title,
+                    text: message,
+                    position: "top", // ✅ Display just below the navbar
+                    toast: true, // ✅ Keeps it compact
+                    showConfirmButton: false,
+                    timer: 3000, // Auto close in 3 seconds
+                    width: "500px", // ✅ Wider but not too tall
+                    padding: "12px",
+                    background: getBackgroundColor(type), // ✅ Custom background colors
+                    color: "#000", // ✅ Keep text readable
+                    customClass: {
+                        popup: "swal-custom-popup",
+                        title: "swal-custom-title",
+                        content: "swal-custom-text"
+                    }
+                });
+            }
+
+            function getBackgroundColor(type) {
+                switch (type) {
+                    case "success": return "#d4edda"; // ✅ Light Green
+                    case "error": return "#f8d7da"; // ✅ Light Red
+                    case "warning": return "#fff3cd"; // ✅ Light Yellow
+                    default: return "#ffffff"; // Default
+                }
+            }
+
+            // Success Alert
+            var successMessage = "@TempData["Success"]";
+            if (successMessage) {
+                showAlert("success", "Success!", successMessage);
+            }
+
+            // Error Alert
+            var errorMessage = "@TempData["Error"]";
+            if (errorMessage) {
+                showAlert("error", "Oops!", errorMessage);
+            }
+
+             // Warning Alert
+             var warningMessage = "@TempData["Warning"]";
+             if (warningMessage) {
+                showAlert("warning", "Attention!", warningMessage);
+             }
+
+            // Warning Alert
+            var warningMessage = "@Context.Request.Query["warning"]";
+            if (warningMessage) {
+                showAlert("warning", "Warning!", warningMessage);
+            }
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

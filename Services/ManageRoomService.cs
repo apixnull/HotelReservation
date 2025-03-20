@@ -30,7 +30,6 @@ namespace HotelReservation.Services
                 Price = model.Price,
                 Status = model.Status,
                 Description = model.Description,
-                Amenities = model.Amenities,
                 MaxOccupancy = model.MaxOccupancy // ✅ Added Max Occupancy
             };
 
@@ -76,7 +75,6 @@ namespace HotelReservation.Services
             room.Price = model.Price;
             room.Status = model.Status;
             room.Description = model.Description;
-            room.Amenities = model.Amenities;
             room.MaxOccupancy = model.MaxOccupancy; // ✅ Added Max Occupancy
 
             // Define folder path based on room number

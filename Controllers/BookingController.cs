@@ -1,55 +1,64 @@
-﻿using HotelReservation.Data;
+﻿// BookingController.cs
+using System.Security.Claims;
 using HotelReservation.Models;
+using HotelReservation.ViewModels;
+using HotelReservation.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-
 
 namespace HotelReservation.Controllers
 {
     public class BookingController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly BookingService _bookingService;
 
-        public BookingController(ApplicationDbContext context)
+        public BookingController(BookingService bookingService)
         {
-            _context = context;
+            _bookingService = bookingService;
         }
 
-        // ✅ Search for available rooms
-        // ✅ Search for available rooms
         public async Task<IActionResult> Search(int MaxOccupancy, string? RoomType)
         {
-            // 🔹 Query available rooms
-            var query = _context.Rooms
-                .Where(r => r.Status == RoomStatus.Available);
-
-            if (!string.IsNullOrEmpty(RoomType) && Enum.TryParse(RoomType, out RoomType parsedType))
-            {
-                query = query.Where(r => r.RoomType == parsedType);
-            }
-
-            // ✅ Filter by Max Occupancy (Assuming you have a field for it)
-            query = query.Where(r => r.MaxOccupancy <= MaxOccupancy);
-
-            var availableRooms = await query.ToListAsync();
-
-            // ✅ Redirect with Fragment to Scroll
+            var availableRooms = await _bookingService.SearchAvailableRooms(MaxOccupancy, RoomType);
             return View("Search", availableRooms);
         }
 
-
         public async Task<IActionResult> GetRoomDetails(int id)
         {
-            var room = await _context.Rooms.FirstOrDefaultAsync(r => r.RoomId == id);
-
+            var room = await _bookingService.GetRoomDetails(id);
             if (room == null)
             {
                 return Content("<p class='text-danger'>Room not found.</p>");
             }
-
             return PartialView("_RoomDetailsPartial", room);
         }
 
+        public async Task<IActionResult> Book(int id)
+        {
+            var viewModel = await _bookingService.GetBookingDetails(id, User);
+            if (viewModel == null)
+            {
+                return NotFound();
+            }
+            return View(viewModel);
+        }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Book(BookingViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var reservation = await _bookingService.CreateBooking(model, User);
+            if (reservation == null)
+            {
+                ModelState.AddModelError("", "Selected room is no longer available.");
+                return View(model);
+            }
+
+            return RedirectToAction("Confirmation", new { id = reservation.ReservationId });
+        }
     }
 }

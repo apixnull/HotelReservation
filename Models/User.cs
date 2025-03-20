@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Data;
 
 namespace HotelReservation.Models
 {
@@ -23,7 +22,7 @@ namespace HotelReservation.Models
         public string? LastName { get; set; }
 
         [Required, MaxLength(100)]
-        public string Email { get; set; } = String.Empty;
+        public string Email { get; set; } = string.Empty;
 
         [MaxLength(20)]
         public string? Phone { get; set; }
@@ -33,10 +32,14 @@ namespace HotelReservation.Models
 
         public string? ProfilePicture { get; set; }
 
-        [Required]  
-        public string Password { get; set; }  = String.Empty;
+        [Required]
+        public string Password { get; set; } = string.Empty;
 
         [Required]
-        public DateTime CreatedAt { get; set; } = DateTime.Now; 
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        // ✅ New Fields for Email Verification
+        public string? EmailVerificationCode { get; set; }  // Stores the verification code
+        public bool IsEmailVerified { get; set; } = false;  // Email verification status
     }
 }

@@ -26,7 +26,6 @@ namespace HotelReservation.Areas.Admin.ViewModels
         public int MaxOccupancy { get; set; } // ✅ Added Max Occupancy
 
         public string? Description { get; set; }
-        public string? Amenities { get; set; }
 
         // ✅ Existing Image Paths (For Display)
         public string? ExistingImage1 { get; set; }
