@@ -1,19 +1,23 @@
-﻿// BookingController.cs
-using System.Security.Claims;
-using HotelReservation.Models;
-using HotelReservation.ViewModels;
+﻿using HotelReservation.ViewModels;
 using HotelReservation.Services;
 using Microsoft.AspNetCore.Mvc;
+using HotelReservation.Data;
+using Newtonsoft.Json;
+using System.Security.Claims;
+using HotelReservation.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelReservation.Controllers
 {
     public class BookingController : Controller
     {
         private readonly BookingService _bookingService;
+        private readonly ApplicationDbContext _context; // ✅ Injecting DbContext
 
-        public BookingController(BookingService bookingService)
+        public BookingController(BookingService bookingService, ApplicationDbContext context)
         {
             _bookingService = bookingService;
+            _context = context;
         }
 
 
@@ -31,11 +35,9 @@ namespace HotelReservation.Controllers
         /***********************************************************************************************************************/
         /***********************************************************************************************************************/
         /***********************************************************************************************************************/
-        // Book
-
-
+        // Reservation
         [HttpGet]
-        public async Task<IActionResult> Book(int id)
+        public async Task<IActionResult> Reservation(int id)
         {
             var room = await _bookingService.GetRoomDetails(id);
             if (room == null)
@@ -43,99 +45,95 @@ namespace HotelReservation.Controllers
                 return NotFound();
             }
 
-            return View(room); // ✅ Pass Room Model Directly
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Book(int RoomId, DateTime CheckInDate, DateTime CheckOutDate, decimal TotalPrice)
-        {
-            if (CheckInDate < DateTime.Today || CheckOutDate <= CheckInDate)
+            // Create the view model and populate with room details
+            var reservationViewModel = new ReservationViewModel
             {
-                ModelState.AddModelError("", "Invalid check-in/check-out dates.");
-                return RedirectToAction("Book", new { id = RoomId });
-            }
-
-            // ✅ Store values in TempData
-            TempData["RoomId"] = RoomId;
-            TempData["CheckInDate"] = CheckInDate.ToString("yyyy-MM-dd");
-            TempData["CheckOutDate"] = CheckOutDate.ToString("yyyy-MM-dd");
-            TempData["TotalPrice"] = TotalPrice.ToString();
-
-            // ✅ Ensure TempData persists
-            TempData.Keep("RoomId");
-            TempData.Keep("CheckInDate");
-            TempData.Keep("CheckOutDate");
-            TempData.Keep("TotalPrice");
-
-            return RedirectToAction("Checkout");
-        }
-
-
-
-        /***********************************************************************************************************************/
-        /***********************************************************************************************************************/
-        /***********************************************************************************************************************/
-        // Checkout - Review and Confirm Booking
-        // Checkout - Review and Confirm Booking
-        [HttpGet]
-        public async Task<IActionResult> Checkout()
-        {
-            if (!TempData.ContainsKey("RoomId") ||
-                !TempData.ContainsKey("CheckInDate") ||
-                !TempData.ContainsKey("CheckOutDate") ||
-                !TempData.ContainsKey("TotalPrice"))
-            {
-                return RedirectToAction("Search");
-            }
-
-            int RoomId = Convert.ToInt32(TempData["RoomId"]);
-            DateTime CheckInDate = DateTime.Parse(TempData["CheckInDate"]?.ToString() ?? "");
-            DateTime CheckOutDate = DateTime.Parse(TempData["CheckOutDate"]?.ToString() ?? "");
-            decimal TotalPrice = decimal.Parse(TempData["TotalPrice"]?.ToString() ?? "0"); // 🔹 Convert string back to decimal
-
-            TempData.Keep("RoomId");
-            TempData.Keep("CheckInDate");
-            TempData.Keep("CheckOutDate");
-            TempData.Keep("TotalPrice");
-
-            var room = await _bookingService.GetRoomDetails(RoomId);
-            if (room == null)
-            {
-                return NotFound();
-            }
-
-            var checkoutModel = new CheckoutViewModel
-            {
-                RoomId = RoomId,
-                CheckInDate = CheckInDate,
-                CheckOutDate = CheckOutDate,
-                TotalPrice = TotalPrice,
-                Room = room
+                RoomId = room.RoomId,
+                TotalPrice = room.Price,
+                RoomImage1 = room.Image1,
+                RoomImage2 = room.Image2,
+                RoomType = room.RoomType.ToString(),
+                RoomDescription = room.Description,
+                MaxOccupancy = room.MaxOccupancy,
+                BookingReference = Guid.NewGuid().ToString("N").Substring(0, 10).ToUpper()
             };
 
-            return View(checkoutModel);
-        }
+            // If the user is authenticated, prepopulate guest details
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                // Use ClaimTypes.NameIdentifier to retrieve the user id
+                var userId = int.Parse(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
+                var user = await _context.Users.FindAsync(userId);
 
+                if (user != null)
+                {
+                    reservationViewModel.GuestName = $"{user.FirstName} {user.LastName}";
+                    reservationViewModel.GuestEmail = user.Email;
+                    reservationViewModel.GuestPhone = user.Phone ?? string.Empty;
+                }
+            }
+
+            return View(reservationViewModel);
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Checkout(CheckoutViewModel model)
+        public async Task<IActionResult> Reservation(ReservationViewModel model)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            var reservation = await _bookingService.CreateReservation(model, User);
-            if (reservation == null)
+            // Create a pending reservation record
+            var reservation = new Reservation
             {
-                ModelState.AddModelError("", "Something went wrong. Please try again.");
-                return View(model);
-            }
+                RoomId = model.RoomId,
+                // If the user is authenticated, UserId may already be set
+                UserId = model.UserId,
+                GuestName = model.GuestName,
+                GuestEmail = model.GuestEmail,
+                GuestPhone = model.GuestPhone,
+                CheckInDate = model.CheckInDate,
+                CheckOutDate = model.CheckOutDate,
+                Adults = model.Adults,
+                Children = model.Children,
+                TotalPrice = model.TotalPrice,
+                BookingReference = model.BookingReference,
+                IsPaid = false,
+                SpecialRequest = model.SpecialRequest,
+                Status = ReservationStatus.Pending,
+                CreatedAt = DateTime.UtcNow
+            };
 
-            return RedirectToAction("Confirmation", new { id = reservation.ReservationId });
+            _context.Reservations.Add(reservation);
+            await _context.SaveChangesAsync();
+
+            // Optionally store the reservation ID in TempData to retrieve later in the checkout process
+            TempData["ReservationId"] = reservation.ReservationId;
+
+            // Redirect to the checkout page
+            return RedirectToAction("Checkout", "Payment");
         }
+
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        [HttpGet]
+        public async Task<IActionResult> MyReservationSummary(int id)
+        {
+            // Retrieve the reservation including its related Room and Payment details
+            var reservation = await _context.Reservations
+                .Include(r => r.Room)
+                .Include(r => r.Payment)
+                .FirstOrDefaultAsync(r => r.ReservationId == id);
+
+            if (reservation == null)
+                return NotFound();
+
+            return View(reservation);
+        }
+
 
 
 
@@ -153,6 +151,9 @@ namespace HotelReservation.Controllers
             }
             return PartialView("_RoomDetailsPartial", room);
         }
+
+
+
 
     }
 }

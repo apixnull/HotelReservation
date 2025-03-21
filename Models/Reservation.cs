@@ -59,8 +59,8 @@ namespace HotelReservation.Models
 
         public string? CancellationReason { get; set; }
 
-        public DateTime? ActualCheckIn { get; set; }
-        public DateTime? ActualCheckOut { get; set; }
+        public DateTime? ActualCheckIn { get; set; } // should i remove this ?
+        public DateTime? ActualCheckOut { get; set; } // // should i remove this ?
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
