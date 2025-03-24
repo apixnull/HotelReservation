@@ -14,6 +14,7 @@ namespace HotelReservation.Models
     {
         Available,
         Booked,
+        Occupied,
         Maintenance
     }
 

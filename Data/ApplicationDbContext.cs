@@ -36,12 +36,12 @@ namespace HotelReservation.Data
                 .Property(p => p.Amount)
                 .HasColumnType("decimal(10,2)");
 
-            // ✅ Configure Foreign Key Relationship: Reservation ↔ Room
+            // ✅ Fix Foreign Key: Reservation ↔ Room
             modelBuilder.Entity<Reservation>()
                 .HasOne(r => r.Room)
                 .WithMany()
                 .HasForeignKey(r => r.RoomId)
-                .OnDelete(DeleteBehavior.SetNull);  // If room is deleted, reservation remains but RoomId becomes NULL
+                .OnDelete(DeleteBehavior.Restrict);  // 🔥 Prevents NULL issue
 
             // ✅ Configure Foreign Key Relationship: Reservation ↔ User (Nullable for Guests)
             modelBuilder.Entity<Reservation>()
@@ -56,6 +56,14 @@ namespace HotelReservation.Data
                 .WithOne(p => p.Reservation)
                 .HasForeignKey<Payment>(p => p.ReservationId)
                 .OnDelete(DeleteBehavior.Cascade);  // If reservation is deleted, payment is also deleted
+
+
+            // ✅ Fix Foreign Key: CheckedInBy (Front Desk User)
+            modelBuilder.Entity<Reservation>()
+                .HasOne(r => r.CheckedInByUser)
+                .WithMany()
+                .HasForeignKey(r => r.CheckedInBy)
+                .OnDelete(DeleteBehavior.Restrict);  // 🔥 Prevents multiple cascade paths
         }
     }
 }

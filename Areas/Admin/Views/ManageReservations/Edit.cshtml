@@ -1,0 +1,61 @@
+﻿@model HotelReservation.Models.Reservation
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Edit Reservation";
+
+    // Dropdown options for Paid Status
+    var paidOptions = new List<SelectListItem>
+    {
+        new SelectListItem { Text = "Unpaid", Value = "false", Selected = !Model.IsPaid },
+        new SelectListItem { Text = "Paid", Value = "true", Selected = Model.IsPaid }
+    };
+}
+
+<div class="container mt-4">
+    <h2>Edit Reservation</h2>
+    <form asp-action="Edit" method="post" onsubmit="return confirmEdit()">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="ReservationId" />
+
+        <!-- 🔹 Reservation Status -->
+        <div class="mb-3">
+            <label asp-for="Status" class="form-label">Reservation Status</label>
+            <select asp-for="Status" asp-items="Html.GetEnumSelectList<ReservationStatus>()" class="form-select"></select>
+            <span asp-validation-for="Status" class="text-danger"></span>
+        </div>
+
+        <!-- 🔹 Payment Status Dropdown -->
+        <div class="mb-3">
+            <label class="form-label">Payment Status</label>
+            <select class="form-select" asp-for="IsPaid" asp-items="paidOptions"></select>
+            <span asp-validation-for="IsPaid" class="text-danger"></span>
+        </div>
+
+        <!-- 🔹 Cancellation Reason (Only shows when status is Cancelled) -->
+        <div class="mb-3" id="cancelReasonContainer" style="display:@(Model.Status == ReservationStatus.Cancelled ? "block" : "none")">
+            <label asp-for="CancellationReason" class="form-label">Cancellation Reason</label>
+            <textarea asp-for="CancellationReason" class="form-control"></textarea>
+            <span asp-validation-for="CancellationReason" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-success">Save Changes</button>
+        <a class="btn btn-secondary" href="@Url.Action("Index", "ManageReservations")">Cancel</a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // 🔹 Toggle Cancellation Reason field
+        document.querySelector('select[name="Status"]').addEventListener("change", function () {
+            let cancelContainer = document.getElementById("cancelReasonContainer");
+            cancelContainer.style.display = this.value === "Cancelled" ? "block" : "none";
+        });
+
+        // 🔹 Confirmation popup before saving changes
+        function confirmEdit() {
+            return confirm("Are you sure you want to save these changes?");
+        }
+    </script>
+}

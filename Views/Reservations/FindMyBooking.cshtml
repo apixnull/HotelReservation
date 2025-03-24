@@ -1,0 +1,23 @@
+﻿@{
+    ViewData["Title"] = "Find My Booking";
+}
+
+<div class="container mt-4">
+    <h2>Find My Booking</h2>
+    <p>Enter your email and booking reference to view your reservation details.</p>
+
+  
+    <form method="post" asp-action="FindMyBooking">
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" name="email" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="bookingReference" class="form-label">Booking Reference</label>
+            <input type="text" class="form-control" name="bookingReference" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Find Booking</button>
+    </form>
+</div>

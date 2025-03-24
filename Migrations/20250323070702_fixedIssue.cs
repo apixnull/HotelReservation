@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HotelReservation.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class fixedIssue : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -22,7 +22,6 @@ namespace HotelReservation.Migrations
                     Price = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Amenities = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     MaxOccupancy = table.Column<int>(type: "int", nullable: false),
                     LastStatusUpdate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Image1 = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
@@ -46,7 +45,9 @@ namespace HotelReservation.Migrations
                     Role = table.Column<int>(type: "int", nullable: false),
                     ProfilePicture = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EmailVerificationCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsEmailVerified = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -59,7 +60,7 @@ namespace HotelReservation.Migrations
                 {
                     ReservationId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    RoomId = table.Column<int>(type: "int", nullable: true),
+                    RoomId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: true),
                     GuestName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     GuestEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -70,7 +71,14 @@ namespace HotelReservation.Migrations
                     Children = table.Column<int>(type: "int", nullable: false),
                     TotalPrice = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    BookingReference = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsPaid = table.Column<bool>(type: "bit", nullable: false),
+                    SpecialRequest = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CancellationReason = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ActualCheckIn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ActualCheckOut = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CheckedInBy = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -80,7 +88,13 @@ namespace HotelReservation.Migrations
                         column: x => x.RoomId,
                         principalTable: "Rooms",
                         principalColumn: "RoomId",
-                        onDelete: ReferentialAction.SetNull);
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Reservations_Users_CheckedInBy",
+                        column: x => x.CheckedInBy,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Reservations_Users_UserId",
                         column: x => x.UserId,
@@ -100,7 +114,12 @@ namespace HotelReservation.Migrations
                     Status = table.Column<int>(type: "int", nullable: false),
                     TransactionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     GCashNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    GCashTransactionId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                    GCashTransactionId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    PaymentGatewayReference = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PaidAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsRefunded = table.Column<bool>(type: "bit", nullable: false),
+                    RefundedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    RefundTransactionId = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -118,6 +137,11 @@ namespace HotelReservation.Migrations
                 table: "Payments",
                 column: "ReservationId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reservations_CheckedInBy",
+                table: "Reservations",
+                column: "CheckedInBy");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reservations_RoomId",

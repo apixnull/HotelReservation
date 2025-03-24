@@ -81,7 +81,6 @@ namespace HotelReservation.Controllers
 
             // Update reservation status
             reservation.IsPaid = true;
-            reservation.Status = ReservationStatus.Confirmed;
             await _context.SaveChangesAsync();
 
             var subject = "Reservation Confirmed - Your Booking Details";
@@ -98,8 +97,10 @@ namespace HotelReservation.Controllers
                 await _emailService.SendEmailAsync(reservation.GuestEmail, subject, message);
             }
 
-            return RedirectToAction("PaymentSuccess", new { id = payment.PaymentId });
+            Console.WriteLine($"Redirecting to PaymentSuccess with ID: {payment.PaymentId}");
+            return RedirectToAction("PaymentSuccess", new { paymentId = payment.PaymentId });
         }
+
         // Payment success redirection
         public async Task<IActionResult> PaymentSuccess(int paymentId)
         {

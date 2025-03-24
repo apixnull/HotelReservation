@@ -1,0 +1,97 @@
+﻿@model List<HotelReservation.Models.Reservation>
+
+@{
+    ViewData["Title"] = "Manage Reservations";
+}
+
+<h2>Manage Reservations</h2>
+
+<!-- Add Reservation Button (Moved to Top) -->
+<div class="d-flex justify-content-between mb-3">
+    <a class="btn btn-primary" asp-action="SearchRoom">Add New Reservation</a>
+
+    <!-- Search & Filter Section (Client-Side) -->
+    <div class="d-flex">
+        <input type="text" id="searchInput" class="form-control me-2" placeholder="Search by Guest Name / Booking Ref" />
+        <select id="statusFilter" class="form-select me-2">
+            <option value="">All Statuses</option>
+            <option value="Pending">Pending</option>
+            <option value="CheckedIn">Checked In</option>
+            <option value="CheckedOut">Checked Out</option>
+            <option value="Cancelled">Cancelled</option>
+        </select>
+    </div>
+</div>
+
+<table class="table" id="reservationsTable">
+    <thead>
+        <tr>
+            <th>Booking Ref</th>
+            <th>Guest Name</th>
+            <th>Room</th>
+            <th>Check-In</th>
+            <th>Check-Out</th>
+            <th>Status</th>
+            <th>Payment</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var reservation in Model)
+        {
+            <tr>
+                <td>@reservation.BookingReference</td>
+                <td>@reservation.GuestName</td>
+                <td>@(reservation.Room != null ? reservation.Room.RoomNumber : "N/A")</td>
+                <td>@reservation.CheckInDate.ToShortDateString()</td>
+                <td>@reservation.CheckOutDate.ToShortDateString()</td>
+                <td>
+                    <span class="badge bg-@(reservation.Status == HotelReservation.Models.ReservationStatus.CheckedIn ? "success" : "warning")">
+                        @reservation.Status
+                    </span>
+                </td>
+                <td>
+                    @Html.Raw(reservation.IsPaid ? "<span class='badge bg-success'>Paid</span>" : "<span class='badge bg-danger'>Unpaid</span>")
+                </td>
+                <td>
+                    <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@reservation.ReservationId">View</a>
+                    <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@reservation.ReservationId">Edit</a>
+                    <form method="post" asp-action="Delete" asp-route-id="@reservation.ReservationId" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Client-Side JavaScript Filtering -->
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("searchInput");
+            const statusFilter = document.getElementById("statusFilter");
+            const tableRows = document.querySelectorAll("#reservationsTable tbody tr");
+
+            function filterTable() {
+                const searchValue = searchInput.value.toLowerCase();
+                const statusValue = statusFilter.value.toLowerCase();
+
+                tableRows.forEach(row => {
+                    // Assuming columns: 0 - Booking Ref, 1 - Guest Name, 5 - Status
+                    const bookingRef = row.cells[0].textContent.toLowerCase();
+                    const guestName = row.cells[1].textContent.toLowerCase();
+                    const rowStatus = row.cells[5].textContent.toLowerCase();
+
+                    const matchesSearch = bookingRef.includes(searchValue) || guestName.includes(searchValue);
+                    const matchesStatus = statusValue === "" || rowStatus.includes(statusValue);
+
+                    row.style.display = (matchesSearch && matchesStatus) ? "" : "none";
+                });
+            }
+
+            searchInput.addEventListener("input", filterTable);
+            statusFilter.addEventListener("change", filterTable);
+        });
+    </script>
+}

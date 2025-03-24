@@ -1,0 +1,118 @@
+﻿@model HotelReservation.Areas.FrontDesk.ViewModels.ReservationDetailViewModel
+
+@{
+    ViewData["Title"] = "Reservation Details";
+}
+
+<h2 class="mb-4">Reservation Details</h2>
+
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        Booking Reference: @Model.BookingReference
+    </div>
+    <div class="card-body">
+
+        <!-- Guest Information Table -->
+        <h4>Guest Information</h4>
+        <table class="table table-bordered mb-4">
+            <tr>
+                <th>Name</th>
+                <td>@Model.GuestName</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>@Model.GuestEmail</td>
+            </tr>
+            <tr>
+                <th>Phone</th>
+                <td>@Model.GuestPhone</td>
+            </tr>
+        </table>
+
+        <!-- Reservation Details Table -->
+        <h4>Reservation Details</h4>
+        <table class="table table-bordered mb-4">
+            <tr>
+                <th>Check-In Date</th>
+                <td>@Model.CheckInDate.ToShortDateString()</td>
+            </tr>
+            <tr>
+                <th>Check-Out Date</th>
+                <td>@Model.CheckOutDate.ToShortDateString()</td>
+            </tr>
+            <tr>
+                <th>Adults</th>
+                <td>@Model.Adults</td>
+            </tr>
+            <tr>
+                <th>Children</th>
+                <td>@Model.Children</td>
+            </tr>
+            <tr>
+                <th>Total Price</th>
+                <td>₱@Model.TotalPrice</td>
+            </tr>
+            <tr>
+                <th>Special Requests</th>
+                <td>@Model.SpecialRequest</td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td>
+                    <span class="badge bg-info">@Model.Status</span>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Room Details Table -->
+        <h4>Room Details</h4>
+        <table class="table table-bordered mb-4">
+            <tr>
+                <th>Room Number</th>
+                <td>@Model.RoomNumber</td>
+            </tr>
+            <tr>
+                <th>Room Type</th>
+                <td>@Model.RoomType</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>@Model.RoomDescription</td>
+            </tr>
+        </table>
+
+        @if (!string.IsNullOrEmpty(Model.RoomImage1))
+        {
+            <div class="mb-4">
+                <h5>Room Image:</h5>
+                <img src="@Model.RoomImage1" alt="Room Image" class="img-thumbnail" style="max-width:200px;" />
+            </div>
+        }
+
+        <!-- Payment Details Table -->
+        <h4>Payment Details</h4>
+        <table class="table table-bordered">
+            <tr>
+                <th>Payment Status</th>
+                <td>@(Model.IsPaid ? "Paid" : "Unpaid")</td>
+            </tr>
+            @if (Model.IsPaid)
+            {
+                <tr>
+                    <th>Amount Paid</th>
+                    <td>₱@Model.PaymentAmount</td>
+                </tr>
+                <tr>
+                    <th>Payment Method</th>
+                    <td>@Model.PaymentMethod</td>
+                </tr>
+                <tr>
+                    <th>Transaction Date</th>
+                    <td>@Model.TransactionDate?.ToString("f")</td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>
+
+<a class="btn btn-secondary" asp-action="Index">Back to Reservations</a>

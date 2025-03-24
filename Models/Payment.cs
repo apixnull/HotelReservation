@@ -30,14 +30,13 @@ namespace HotelReservation.Models
         public DateTime TransactionDate { get; set; } = DateTime.UtcNow;
 
         // ✅ GCash Payment Details
-        [Required]
+        
         [MaxLength(20)]
         [RegularExpression(@"^09\d{9}$", ErrorMessage = "Invalid GCash number format.")]
-        public string GCashNumber { get; set; } = string.Empty;  // Phone number used for GCash payment
+        public string? GCashNumber { get; set; } = string.Empty;  // Phone number used for GCash payment
 
-        [Required]
         [MaxLength(50)]
-        public string GCashTransactionId { get; set; } = string.Empty; // Unique transaction ID from GCash
+        public string? GCashTransactionId { get; set; } = string.Empty; // Unique transaction ID from GCash
 
         // ✅ New Fields
         public string? PaymentGatewayReference { get; set; } // PayPal/Stripe reference
@@ -47,5 +46,6 @@ namespace HotelReservation.Models
         public bool IsRefunded { get; set; } = false;
         public DateTime? RefundedAt { get; set; } // Date of refund
         public string? RefundTransactionId { get; set; } // Refund transaction ID
+        public string? PaymentMethod { get; set; }
     }
 }

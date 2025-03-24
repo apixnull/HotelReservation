@@ -6,7 +6,8 @@ namespace HotelReservation.Models
     public enum ReservationStatus
     {
         Pending,
-        Confirmed,
+        CheckedIn,  // ✅ Add this
+        CheckedOut, // ✅ Add this
         Cancelled
     }
 
@@ -63,5 +64,9 @@ namespace HotelReservation.Models
         public DateTime? ActualCheckOut { get; set; } // // should i remove this ?
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public int? CheckedInBy { get; set; } // Stores Front Desk User ID
+        [ForeignKey("CheckedInBy")]
+        public User? CheckedInByUser { get; set; } // Navigation property
     }
 }

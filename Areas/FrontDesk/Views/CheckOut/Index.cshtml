@@ -1,0 +1,46 @@
+﻿@model List<HotelReservation.Models.Reservation>
+
+@{
+    ViewData["Title"] = "Check-Out Guests";
+}
+
+<h2>Check-Out Guests</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Booking Ref</th>
+            <th>Guest Name</th>
+            <th>Room</th>
+            <th>Check-In Date</th>
+            <th>Checked-In Time</th>
+            <th>Checked-Out Time</th> <!-- ✅ NEW -->
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var reservation in Model)
+        {
+            <tr>
+                <td>@reservation.BookingReference</td>
+                <td>@reservation.GuestName</td>
+                <td>@(reservation.Room != null ? reservation.Room.RoomNumber : "N/A")</td>
+                <td>@reservation.CheckInDate.ToShortDateString()</td>
+                <td>@(reservation.ActualCheckIn?.ToString("hh:mm tt") ?? "N/A")</td>
+                <td>@(reservation.ActualCheckOut?.ToString("hh:mm tt") ?? "—")</td> <!-- ✅ NEW -->
+                <td>
+                    @if (reservation.Status == HotelReservation.Models.ReservationStatus.CheckedOut)
+                    {
+                        <a class="btn btn-info" asp-action="Receipt" asp-route-id="@reservation.ReservationId">View Receipt</a> <!-- ✅ NEW -->
+                    }
+                    else
+                    {
+                        <form method="post" asp-action="CheckOutGuest" asp-route-id="@reservation.ReservationId">
+                            <button type="submit" class="btn btn-danger">Check Out</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

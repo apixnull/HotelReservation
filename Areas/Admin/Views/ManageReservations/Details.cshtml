@@ -1,0 +1,201 @@
+﻿@model HotelReservation.Models.Reservation
+
+@{
+    ViewData["Title"] = "Reservation Details";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-3">Reservation Details</h2>
+
+    <!-- Reservation Information -->
+    <div class="card mb-4">
+        <div class="card-header">
+            Reservation Information
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <tr>
+                    <th>Reservation ID</th>
+                    <td>@Model.ReservationId</td>
+                </tr>
+                <tr>
+                    <th>Booking Reference</th>
+                    <td>@Model.BookingReference</td>
+                </tr>
+                <tr>
+                    <th>Guest Name</th>
+                    <td>@Model.GuestName</td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td>@Model.GuestEmail</td>
+                </tr>
+                <tr>
+                    <th>Phone</th>
+                    <td>@Model.GuestPhone</td>
+                </tr>
+                <tr>
+                    <th>Check-in Date</th>
+                    <td>@Model.CheckInDate.ToString("MMM dd, yyyy")</td>
+                </tr>
+                <tr>
+                    <th>Check-out Date</th>
+                    <td>@Model.CheckOutDate.ToString("MMM dd, yyyy")</td>
+                </tr>
+                <tr>
+                    <th>Adults</th>
+                    <td>@Model.Adults</td>
+                </tr>
+                <tr>
+                    <th>Children</th>
+                    <td>@Model.Children</td>
+                </tr>
+                <tr>
+                    <th>Total Price</th>
+                    <td>@Model.TotalPrice.ToString("C")</td>
+                </tr>
+                <tr>
+                    <th>Status</th>
+                    <td>@Model.Status</td>
+                </tr>
+                <tr>
+                    <th>Is Paid</th>
+                    <td>@(Model.IsPaid ? "Yes" : "No")</td>
+                </tr>
+                <tr>
+                    <th>Special Request</th>
+                    <td>@Model.SpecialRequest</td>
+                </tr>
+                <tr>
+                    <th>Cancellation Reason</th>
+                    <td>@Model.CancellationReason</td>
+                </tr>
+                <tr>
+                    <th>Actual Check-in</th>
+                    <td>@(Model.ActualCheckIn.HasValue ? Model.ActualCheckIn.Value.ToString("MMM dd, yyyy") : "N/A")</td>
+                </tr>
+                <tr>
+                    <th>Actual Check-out</th>
+                    <td>@(Model.ActualCheckOut.HasValue ? Model.ActualCheckOut.Value.ToString("MMM dd, yyyy") : "N/A")</td>
+                </tr>
+                <tr>
+                    <th>Created At</th>
+                    <td>@Model.CreatedAt.ToString("MMM dd, yyyy hh:mm tt")</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- Room Information -->
+    @if (Model.Room != null)
+    {
+        <div class="card mb-4">
+            <div class="card-header">
+                Room Information
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <tr>
+                        <th>Room ID</th>
+                        <td>@Model.Room.RoomId</td>
+                    </tr>
+                    <tr>
+                        <th>Room Number</th>
+                        <td>@Model.Room.RoomNumber</td>
+                    </tr>
+                    <tr>
+                        <th>Room Type</th>
+                        <td>@Model.Room.RoomType</td>
+                    </tr>
+                    <tr>
+                        <th>Price</th>
+                        <td>@Model.Room.Price.ToString("C")</td>
+                    </tr>
+                    <tr>
+                        <th>Status</th>
+                        <td>@Model.Room.Status</td>
+                    </tr>
+                    <tr>
+                        <th>Max Occupancy</th>
+                        <td>@Model.Room.MaxOccupancy</td>
+                    </tr>
+                    <tr>
+                        <th>Description</th>
+                        <td>@Model.Room.Description</td>
+                    </tr>
+                    <tr>
+                        <th>Last Status Update</th>
+                        <td>@Model.Room.LastStatusUpdate.ToString("MMM dd, yyyy hh:mm tt")</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    }
+
+    <!-- Payment Information -->
+    @if (Model.Payment != null)
+    {
+        <div class="card mb-4">
+            <div class="card-header">
+                Payment Information
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <tr>
+                        <th>Payment ID</th>
+                        <td>@Model.Payment.PaymentId</td>
+                    </tr>
+                    <tr>
+                        <th>Amount</th>
+                        <td>@Model.Payment.Amount.ToString("C")</td>
+                    </tr>
+                    <tr>
+                        <th>Status</th>
+                        <td>@Model.Payment.Status</td>
+                    </tr>
+                    <tr>
+                        <th>Transaction Date</th>
+                        <td>@Model.Payment.TransactionDate.ToString("MMM dd, yyyy hh:mm tt")</td>
+                    </tr>
+                    <tr>
+                        <th>GCash Number</th>
+                        <td>@Model.Payment.GCashNumber</td>
+                    </tr>
+                    <tr>
+                        <th>GCash Transaction ID</th>
+                        <td>@Model.Payment.GCashTransactionId</td>
+                    </tr>
+                    @if (Model.Payment.PaidAt.HasValue)
+                    {
+                        <tr>
+                            <th>Paid At</th>
+                            <td>@Model.Payment.PaidAt.Value.ToString("MMM dd, yyyy hh:mm tt")</td>
+                        </tr>
+                    }
+                    @if (Model.Payment.IsRefunded)
+                    {
+                        <tr>
+                            <th>Refunded At</th>
+                            <td>@Model.Payment.RefundedAt?.ToString("MMM dd, yyyy hh:mm tt")</td>
+                        </tr>
+                        <tr>
+                            <th>Refund Transaction ID</th>
+                            <td>@Model.Payment.RefundTransactionId</td>
+                        </tr>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.Payment.PaymentGatewayReference))
+                    {
+                        <tr>
+                            <th>Payment Gateway Reference</th>
+                            <td>@Model.Payment.PaymentGatewayReference</td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+    }
+
+    <div>
+        <a class="btn btn-secondary" href="@Url.Action("Index", "ManageReservations")">Back to List</a>
+    </div>
+</div>

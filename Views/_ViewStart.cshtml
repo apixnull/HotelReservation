@@ -1,10 +1,15 @@
-﻿@{
-    var userRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+﻿    @{
+        var userRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
 
-    if (userRole == "Admin" && !Context.Request.Path.StartsWithSegments("/Admin"))
-    {
-        Context.Response.Redirect("/Admin/Dashboard");
+        if (userRole == "Admin" && !Context.Request.Path.StartsWithSegments("/Admin"))
+        {
+            Context.Response.Redirect("/Admin/Dashboard");
+        }
+        else if (userRole == "FrontDesk" && !Context.Request.Path.StartsWithSegments("/FrontDesk"))
+        {
+            Context.Response.Redirect("/FrontDesk/Dashboard");
+        }
+
+        Layout = "_Layout"; // Default layout
     }
-
-    Layout = "_Layout"; // Default layout
-}
+     

@@ -1,0 +1,26 @@
+﻿@model HotelReservation.Areas.FrontDesk.ViewModels.PaymentViewModel
+
+@{
+    ViewData["Title"] = "Payment Checkout";
+}
+
+<h2>Payment Checkout</h2>
+
+<p>Booking Reference: <strong>@Model.BookingReference</strong></p>
+<p>Guest Name: <strong>@Model.GuestName</strong></p>
+<p>Total Amount: <strong>₱@Model.TotalAmount</strong></p>
+<p>Payment Method: <strong>@Model.PaymentMethod</strong></p>
+
+<form asp-action="ProcessPayment" method="post">
+    <input type="hidden" asp-for="ReservationId" />
+    <input type="hidden" asp-for="PaymentMethod" />
+
+    @if (Model.PaymentMethod == "GCash")
+    {
+        <label>GCash Number:</label>
+        <input type="text" asp-for="GCashNumber" class="form-control" required />
+        <span asp-validation-for="GCashNumber" class="text-danger"></span>
+    }
+
+    <button type="submit" class="btn btn-success">Confirm Payment</button>
+</form>

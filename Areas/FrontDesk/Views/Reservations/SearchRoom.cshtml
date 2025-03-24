@@ -1,0 +1,113 @@
+﻿@model HotelReservation.Areas.FrontDesk.ViewModels.SearchRoomViewModel
+
+@{
+    ViewData["Title"] = "Search Available Rooms";
+}
+
+<h2>Search Available Rooms</h2>
+
+<!-- Search Form -->
+<form method="post" asp-action="SearchRoom">
+    <div class="row">
+        <div class="col-md-3">
+            <label>Check-In Date</label>
+            <input type="date" asp-for="CheckInDate" class="form-control" id="checkInDate" />
+            <span asp-validation-for="CheckInDate" class="text-danger"></span>
+        </div>
+        <div class="col-md-3">
+            <label>Check-Out Date</label>
+            <input type="date" asp-for="CheckOutDate" class="form-control" id="checkOutDate" />
+            <span asp-validation-for="CheckOutDate" class="text-danger"></span>
+        </div>
+        <div class="col-md-2">
+            <label>Max Occupancy</label>
+            <input type="number" asp-for="MaxOccupancy" class="form-control" />
+            <span asp-validation-for="MaxOccupancy" class="text-danger"></span>
+        </div>
+        <div class="col-md-2">
+            <label>Room Type</label>
+            <select asp-for="SelectedRoomType" asp-items="Html.GetEnumSelectList<HotelReservation.Models.RoomType>()" class="form-control"></select>
+            <span asp-validation-for="SelectedRoomType" class="text-danger"></span>
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Search</button>
+        </div>
+    </div>
+</form>
+
+<hr />
+
+@if (Model.AvailableRooms != null)
+{
+    <h3>Available Rooms</h3>
+    <div class="row">
+        @foreach (var room in Model.AvailableRooms)
+        {
+            <div class="col-md-12">
+                <!-- 1 Room per row -->
+                <div class="card mb-4 shadow-lg">
+                    <div class="row g-0">
+                        <div class="col-md-5">
+                            <img src="@room.Image1" class="img-fluid rounded" alt="Room Image">
+                        </div>
+                        <div class="col-md-7">
+                            <div class="card-body">
+                                <h4 class="card-title">Room @room.RoomNumber</h4>
+                                <p class="card-text"><strong>Type:</strong> @room.RoomType</p>
+                                <p class="card-text"><strong>Max Occupancy:</strong> @room.MaxOccupancy</p>
+                                <p class="card-text"><strong>Price:</strong> ₱@room.Price per night</p>
+                                <p class="card-text">@room.Description</p>
+                                <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#roomDetails-@room.RoomId">See More Details</button>
+                                <a asp-action="Create" asp-route-roomId="@room.RoomId" asp-route-checkIn="@Model.CheckInDate" asp-route-checkOut="@Model.CheckOutDate" class="btn btn-success">Book Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Room Details Modal -->
+            <div class="modal fade" id="roomDetails-@room.RoomId" tabindex="-1" aria-labelledby="roomDetailsLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Room @room.RoomNumber Details</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <img src="@room.Image2" class="img-fluid mb-3" alt="Room Image">
+                            <p><strong>Type:</strong> @room.RoomType</p>
+                            <p><strong>Price:</strong> ₱@room.Price per night</p>
+                            <p><strong>Max Occupancy:</strong> @room.MaxOccupancy</p>
+                            <p><strong>Description:</strong> @room.Description</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <a asp-action="Create" asp-route-roomId="@room.RoomId" asp-route-checkIn="@Model.CheckInDate" asp-route-checkOut="@Model.CheckOutDate" class="btn btn-success">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let today = new Date().toISOString().split("T")[0];
+            document.getElementById("checkInDate").setAttribute("min", today);
+            document.getElementById("checkOutDate").setAttribute("min", today);
+
+            document.getElementById("checkInDate").addEventListener("change", function () {
+                let checkInDate = new Date(this.value);
+                let minCheckOutDate = new Date(checkInDate);
+                minCheckOutDate.setDate(minCheckOutDate.getDate() + 1);
+                let minDateFormatted = minCheckOutDate.toISOString().split("T")[0];
+                document.getElementById("checkOutDate").setAttribute("min", minDateFormatted);
+                if (document.getElementById("checkOutDate").value < minDateFormatted) {
+                    document.getElementById("checkOutDate").value = minDateFormatted;
+                }
+            });
+        });
+    </script>
+}

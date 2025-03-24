@@ -59,6 +59,12 @@ namespace HotelReservation.Controllers
                 TempData["Success"] = "Welcome Admin!";
                 return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
             }
+            else if (userRole == "FrontDesk")
+            {
+                TempData["Success"] = "Welcome Front Desk!";
+                return RedirectToAction("Index", "Dashboard", new { area = "FrontDesk" });
+            }
+
 
             TempData["Success"] = "Login successful.";
             return RedirectToAction("Index", "Home");

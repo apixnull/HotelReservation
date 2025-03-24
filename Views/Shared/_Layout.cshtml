@@ -64,15 +64,21 @@
                                 <nav>
                                     <ul id="navigation">
                                         <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-                                        <li><a asp-area="" asp-controller="Home" asp-action="Rooms">Rooms</a></li>
-                                        <li><a asp-area="" asp-controller="Home" asp-action="Service">Services</a></li>
-                                        <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
+                                        <li>
+                                            <ul class="submenu">
+                                                <li><a asp-area="" asp-controller="Home" asp-action="Rooms">Rooms</a></li>
+                                                <li><a asp-area="" asp-controller="Home" asp-action="Service">Services</a></li>
+                                                <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
+                                            </ul>
+                                        </li>
+                                        <li><a asp-controller="Reservations" asp-action="FindMyBooking">Find My Booking</a></li>
                                         @if (isAuthenticated)
                                         {
                                             <li>
                                                 <a href="#">@email</a>
                                                 <ul class="submenu">
                                                     <li><a href="rooms.html">Profile</a></li>
+                                                    <li><a href="rooms.html">Dashboard</a></li> <!-- or put it in how about putting it  here -->
                                                     <li><a href="rooms.html">Notification</a></li>
                                                     <li><a href="elements.html">Settings</a></li>
                                                     <li><a asp-area="" asp-controller="Auth" asp-action="Logout" class="text-danger">Logout</a></li>

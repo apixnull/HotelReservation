@@ -34,12 +34,10 @@ namespace HotelReservation.Migrations
                         .HasColumnType("decimal(10,2)");
 
                     b.Property<string>("GCashNumber")
-                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("GCashTransactionId")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -50,6 +48,9 @@ namespace HotelReservation.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("PaymentGatewayReference")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentMethod")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RefundTransactionId")
@@ -105,6 +106,9 @@ namespace HotelReservation.Migrations
                     b.Property<DateTime>("CheckOutDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("CheckedInBy")
+                        .HasColumnType("int");
+
                     b.Property<int>("Children")
                         .HasColumnType("int");
 
@@ -139,6 +143,8 @@ namespace HotelReservation.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("ReservationId");
+
+                    b.HasIndex("CheckedInBy");
 
                     b.HasIndex("RoomId");
 
@@ -259,16 +265,23 @@ namespace HotelReservation.Migrations
 
             modelBuilder.Entity("HotelReservation.Models.Reservation", b =>
                 {
+                    b.HasOne("HotelReservation.Models.User", "CheckedInByUser")
+                        .WithMany()
+                        .HasForeignKey("CheckedInBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("HotelReservation.Models.Room", "Room")
                         .WithMany()
                         .HasForeignKey("RoomId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("HotelReservation.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("CheckedInByUser");
 
                     b.Navigation("Room");
 

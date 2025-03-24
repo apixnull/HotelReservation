@@ -1,0 +1,119 @@
+﻿@model HotelReservation.ViewModels.ReservationViewModel
+
+@{
+    ViewData["Title"] = "Create Reservation";
+}
+
+<h2>Create Reservation</h2>
+
+<!-- Room Details Section -->
+<div class="card mb-4">
+    <div class="row g-0">
+        <div class="col-md-6">
+            <img src="@Model.RoomImage1" class="img-fluid rounded" alt="Room Image 1">
+            <img src="@Model.RoomImage2" class="img-fluid rounded mt-2" alt="Room Image 2">
+        </div>
+        <div class="col-md-6">
+            <div class="card-body">
+                <h4 class="card-title">@Model.RoomType</h4>
+                <p class="card-text">@Model.RoomDescription</p>
+                <p><strong>Room Number:</strong> @Model.RoomNumber</p>
+                <p><strong>Max Occupancy:</strong> @Model.MaxOccupancy</p>
+                <p><strong>Total Price:</strong> ₱@Model.TotalPrice</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reservation Form -->
+<form method="post" asp-action="Create" novalidate>
+    <input type="hidden" asp-for="RoomId" />
+
+    <div class="mb-3">
+        <label class="form-label">Full Name</label>
+        <input type="text" class="form-control" asp-for="GuestName" required />
+        <span asp-validation-for="GuestName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-control" asp-for="GuestEmail" required />
+        <span asp-validation-for="GuestEmail" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Phone</label>
+        <input type="tel" class="form-control" asp-for="GuestPhone" required />
+        <span asp-validation-for="GuestPhone" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Check-In Date</label>
+        <input type="date" class="form-control" asp-for="CheckInDate" id="checkInDate" required />
+        <span asp-validation-for="CheckInDate" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Check-Out Date</label>
+        <input type="date" class="form-control" asp-for="CheckOutDate" id="checkOutDate" required />
+        <span asp-validation-for="CheckOutDate" class="text-danger"></span>
+    </div>
+
+    <!-- ✅ Adults Field (Added) -->
+    <div class="mb-3">
+        <label class="form-label">Number of Adults</label>
+        <input type="number" class="form-control" asp-for="Adults" min="1" max="10" required />
+        <span asp-validation-for="Adults" class="text-danger"></span>
+    </div>
+
+    <!-- ✅ Children Field (Added) -->
+    <div class="mb-3">
+        <label class="form-label">Number of Children</label>
+        <input type="number" class="form-control" asp-for="Children" min="0" max="10" required />
+        <span asp-validation-for="Children" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Special Requests</label>
+        <textarea class="form-control" asp-for="SpecialRequest"></textarea>
+        <span asp-validation-for="SpecialRequest" class="text-danger"></span>
+    </div>
+
+    <hr />
+
+    <button type="submit" class="btn btn-success">Proceed to Payment</button>
+</form>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let today = new Date().toISOString().split("T")[0];
+
+            // Disable past dates for Check-In
+            document.getElementById("checkInDate").setAttribute("min", today);
+
+            // Update Check-Out min date when Check-In is selected
+            document.getElementById("checkInDate").addEventListener("change", function () {
+                let checkInDate = new Date(this.value);
+                let minCheckOutDate = new Date(checkInDate);
+                minCheckOutDate.setDate(minCheckOutDate.getDate() + 1); // Next day
+                let minCheckOut = minCheckOutDate.toISOString().split("T")[0];
+
+                document.getElementById("checkOutDate").setAttribute("min", minCheckOut);
+                document.getElementById("checkOutDate").value = minCheckOut; // Auto set
+            });
+
+            // Prevent Check-Out from being before Check-In
+            document.getElementById("checkOutDate").addEventListener("change", function () {
+                let checkInValue = document.getElementById("checkInDate").value;
+                if (new Date(this.value) <= new Date(checkInValue)) {
+                    alert("Check-Out date must be after Check-In date.");
+                    this.value = "";
+                }
+            });
+        });
+    </script>
+}

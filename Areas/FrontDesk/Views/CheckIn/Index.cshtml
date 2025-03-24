@@ -1,0 +1,81 @@
+﻿@model List<HotelReservation.Models.Reservation>
+
+@{
+    ViewData["Title"] = "Check-In Guests";
+    var checkedInGuests = Model.Where(r => r.Status == HotelReservation.Models.ReservationStatus.CheckedIn).ToList();
+    var pendingGuests = Model.Where(r => r.Status == HotelReservation.Models.ReservationStatus.Pending).ToList();
+}
+
+<h2>Check-In Guests</h2>
+
+@if (pendingGuests.Any())
+{
+    <h3>Pending Check-Ins</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Booking Ref</th>
+                <th>Guest Name</th>
+                <th>Room</th>
+                <th>Check-In Date</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var reservation in pendingGuests)
+            {
+                <tr>
+                    <td>@reservation.BookingReference</td>
+                    <td>@reservation.GuestName</td>
+                    <td>@(reservation.Room != null ? reservation.Room.RoomNumber : "N/A")</td>
+                    <td>@reservation.CheckInDate.ToShortDateString()</td>
+                    <td>
+                        <span class="badge bg-warning">Pending</span>
+                    </td>
+                    <td>
+                        <form method="post" asp-action="CheckInGuest" asp-route-id="@reservation.ReservationId">
+                            <button type="submit" class="btn btn-success">Check In</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No pending check-ins for today.</p>
+}
+
+@if (checkedInGuests.Any())
+{
+    <h3>Checked-In Guests</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Booking Ref</th>
+                <th>Guest Name</th>
+                <th>Room</th>
+                <th>Check-In Date</th>
+                <th>Checked-In Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var reservation in checkedInGuests)
+            {
+                <tr>
+                    <td>@reservation.BookingReference</td>
+                    <td>@reservation.GuestName</td>
+                    <td>@(reservation.Room != null ? reservation.Room.RoomNumber : "N/A")</td>
+                    <td>@reservation.CheckInDate.ToShortDateString()</td>
+                    <td>@(reservation.ActualCheckIn?.ToString("hh:mm tt") ?? "N/A")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No guests have checked in today.</p>
+}

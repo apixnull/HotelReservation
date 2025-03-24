@@ -1,0 +1,50 @@
+﻿@model List<HotelReservation.Models.Reservation>
+
+@{
+    ViewData["Title"] = "Guest Search";
+}
+
+<h2>Guest Search</h2>
+
+<form method="post" asp-action="Search">
+    <div class="input-group mb-3">
+        <input type="text" name="searchTerm" class="form-control" placeholder="Enter Name, Email, or Booking Reference" required>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+</form>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+@if (Model != null && Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Booking Ref</th>
+                <th>Guest Name</th>
+                <th>Email</th>
+                <th>Room</th>
+                <th>Check-In</th>
+                <th>Check-Out</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var reservation in Model)
+            {
+                <tr>
+                    <td>@reservation.BookingReference</td>
+                    <td>@reservation.GuestName</td>
+                    <td>@reservation.GuestEmail</td>
+                    <td>@(reservation.Room != null ? reservation.Room.RoomNumber : "N/A")</td>
+                    <td>@reservation.CheckInDate.ToShortDateString()</td>
+                    <td>@reservation.CheckOutDate.ToShortDateString()</td>
+                    <td>@reservation.Status</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

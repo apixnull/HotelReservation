@@ -1,0 +1,33 @@
+﻿@model HotelReservation.Models.Reservation
+
+@{
+    ViewData["Title"] = "Receipt";
+}
+
+<h2>Hotel Stay Receipt</h2>
+<hr />
+
+<!-- ✅ Back to Check-Out Button -->
+<a asp-area="FrontDesk" asp-controller="CheckOut" asp-action="Index" class="btn btn-secondary mb-3">⬅ Back to Check-Out</a>
+
+<div class="card">
+    <div class="card-body">
+        <h4>Guest Information</h4>
+        <p><strong>Name:</strong> @Model.GuestName</p>
+        <p><strong>Email:</strong> @Model.GuestEmail</p>
+        <p><strong>Phone:</strong> @Model.GuestPhone</p>
+
+        <h4>Booking Details</h4>
+        <p><strong>Booking Reference:</strong> @Model.BookingReference</p>
+        <p><strong>Room Number:</strong> @(Model.Room != null ? Model.Room.RoomNumber : "N/A")</p>
+        <p><strong>Check-In Date:</strong> @Model.CheckInDate.ToShortDateString()</p>
+        <p><strong>Check-Out Date:</strong> @Model.CheckOutDate.ToShortDateString()</p>
+        <p><strong>Actual Check-Out:</strong> @(Model.ActualCheckOut?.ToString("f") ?? "N/A")</p>
+
+        <h4>Billing Information</h4>
+        <p><strong>Total Amount:</strong> $@Model.TotalPrice</p>
+        <p><strong>Paid:</strong> @(Model.IsPaid ? "Yes" : "No")</p>
+
+        <button onclick="window.print()" class="btn btn-primary">Print Receipt</button>
+    </div>
+</div>

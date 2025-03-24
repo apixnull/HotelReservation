@@ -6,6 +6,8 @@ namespace HotelReservation.ViewModels
     public class ReservationViewModel
     {
         // Reservation Details
+        public int ReservationId { get; set; }
+
         [Required]
         public int RoomId { get; set; }
 
@@ -43,7 +45,6 @@ namespace HotelReservation.ViewModels
         [Range(0, 999999.99, ErrorMessage = "Total price must be a valid amount.")]
         public decimal TotalPrice { get; set; }
 
-        [Required]
         public string BookingReference { get; set; } = string.Empty;
 
         public bool IsPaid { get; set; }

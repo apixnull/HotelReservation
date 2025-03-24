@@ -85,6 +85,12 @@ namespace HotelReservation.Controllers
                 return View(model);
             }
 
+            // Ensure UserId is set if the user is authenticated
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                model.UserId = int.Parse(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
+            }
+
             // Create a pending reservation record
             var reservation = new Reservation
             {
