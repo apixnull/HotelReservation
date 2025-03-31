@@ -50,5 +50,9 @@ namespace HotelReservation.Models
 
         [MaxLength(255)]
         public string? Image2 { get; set; }
+
+        public DateTime? LastCleaned { get; set; } // ✅ NEW: Track last cleaned date
+
+        public bool NeedsCleaning { get; set; } = false; // ✅ NEW: Indicates if cleaning is required
     }
 }

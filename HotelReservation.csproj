@@ -23,6 +23,8 @@
     <Folder Include="Areas\Admin\Models\" />
     <Folder Include="Areas\FrontDesk\Data\" />
     <Folder Include="Areas\FrontDesk\Models\" />
+    <Folder Include="Areas\HouseKeeping\Data\" />
+    <Folder Include="Areas\HouseKeeping\Models\" />
     <Folder Include="wwwroot\assets\js\" />
     <Folder Include="wwwroot\authAsset\" />
     <Folder Include="wwwroot\uploads\" />

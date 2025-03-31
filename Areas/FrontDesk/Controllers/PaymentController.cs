@@ -1,12 +1,14 @@
 ﻿using HotelReservation.Areas.FrontDesk.ViewModels;
 using HotelReservation.Data;
 using HotelReservation.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace HotelReservation.Areas.FrontDesk.Controllers
 {
     [Area("FrontDesk")]
+    [Authorize(Policy = "FrontDesk,Admin")]
     public class PaymentController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -18,7 +20,10 @@ namespace HotelReservation.Areas.FrontDesk.Controllers
             _emailService = emailService;
         }
 
-        // Step 1: Show Payment Selection Page
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        //  Index
         [HttpGet]
         public async Task<IActionResult> Index(int reservationId)
         {
@@ -39,7 +44,13 @@ namespace HotelReservation.Areas.FrontDesk.Controllers
             return View(viewModel);
         }
 
-        // Step 2: Handle Payment Method Selection
+
+
+
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        //  Select Payment Method
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult SelectPaymentMethod(PaymentViewModel model)
@@ -53,7 +64,14 @@ namespace HotelReservation.Areas.FrontDesk.Controllers
             return RedirectToAction("Checkout", new { reservationId = model.ReservationId, paymentMethod = model.PaymentMethod });
         }
 
-        // Step 3: Show Checkout Page
+
+
+
+
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        //  CHeckout
         [HttpGet]
         public async Task<IActionResult> Checkout(int reservationId, string paymentMethod)
         {
@@ -72,7 +90,12 @@ namespace HotelReservation.Areas.FrontDesk.Controllers
             return View(viewModel);
         }
 
-        // Step 4: Process Payment
+
+
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        //  Process Payment
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ProcessPayment(PaymentViewModel model)
@@ -110,7 +133,11 @@ namespace HotelReservation.Areas.FrontDesk.Controllers
             return RedirectToAction("Success", new { reservationId = model.ReservationId });
         }
 
-        // Step 5: Show Success Page
+
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        //  Success Page
         [HttpGet]
         public async Task<IActionResult> Success(int reservationId)
         {
@@ -131,7 +158,10 @@ namespace HotelReservation.Areas.FrontDesk.Controllers
             return View(viewModel);
         }
 
-        // ✅ Step 6: Show Reservation Summary
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        //  Generate a Summary of the Reservation
         [HttpGet]
         public async Task<IActionResult> Summary(int id)
         {

@@ -1,0 +1,46 @@
+﻿@model IEnumerable<HotelReservation.Models.Reservation>
+
+@{
+    ViewData["Title"] = "Billing & Payments";
+}
+
+<h2>Billing & Payments</h2>
+
+<!-- Filter Section -->
+<div class="mb-3">
+    <a class="btn btn-secondary me-2" asp-action="Index" asp-route-filter="">All</a>
+    <a class="btn btn-secondary me-2" asp-action="Index" asp-route-filter="Paid">Paid</a>
+    <a class="btn btn-secondary" asp-action="Index" asp-route-filter="Unpaid">Unpaid</a>
+</div>
+
+<table class="table table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Booking Ref</th>
+            <th>Guest Name</th>
+            <th>Room</th>
+            <th>Total Price</th>
+            <th>Payment Status</th>
+            <th>Check-In</th>
+            <th>Check-Out</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var reservation in Model)
+        {
+            <tr>
+                <td>@reservation.BookingReference</td>
+                <td>@reservation.GuestName</td>
+                <td>@(reservation.Room != null ? reservation.Room.RoomNumber : "N/A")</td>
+                <td>₱@reservation.TotalPrice</td>
+                <td>
+                    @Html.Raw(reservation.IsPaid
+                             ? "<span class='badge bg-success'>Paid</span>"
+                             : "<span class='badge bg-danger'>Unpaid</span>")
+                </td>
+                <td>@reservation.CheckInDate.ToShortDateString()</td>
+                <td>@reservation.CheckOutDate.ToShortDateString()</td>
+            </tr>
+        }
+    </tbody>
+</table>

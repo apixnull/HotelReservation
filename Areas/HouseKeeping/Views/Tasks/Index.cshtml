@@ -1,0 +1,43 @@
+﻿@model List<HotelReservation.Models.HousekeepingRequest>
+
+@{
+    ViewData["Title"] = "Housekeeping Tasks";
+}
+
+<h2>Housekeeping Tasks</h2>
+
+<table class="table table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Room Number</th>
+            <th>Request Description</th>
+            <th>Request Date</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var task in Model)
+        {
+            <tr>
+                <td>@(task.Room != null ? task.Room.RoomNumber : "N/A")</td>
+                <td>@task.RequestDescription</td>
+                <td>@task.RequestDate.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>@task.Status</td>
+                <td>
+                    @if (task.Status != HotelReservation.Models.RequestStatus.Completed)
+                    {
+                        <form method="post" asp-action="MarkAsCompleted" asp-route-id="@task.RequestId" style="display:inline;">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Mark this task as completed?');">Mark as Completed</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Completed</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

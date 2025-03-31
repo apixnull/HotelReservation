@@ -1,0 +1,126 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    var userEmail = HttpContextAccessor.HttpContext?.User.Identity?.Name ?? "Housekeeping";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Housekeeping</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <div class="d-flex" id="wrapper">
+        <!-- Sidebar -->
+        <nav class="bg-dark text-white vh-100 d-flex flex-column p-3 position-fixed top-0 start-0 h-100 overflow-auto" id="sidebar">
+            <h4 class="text-center">Housekeeping</h4>
+            <hr />
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link text-white" asp-area="Housekeeping" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" asp-area="Housekeeping" asp-controller="Tasks" asp-action="Index">Housekeeping Tasks</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" asp-area="Housekeeping" asp-controller="MaintenanceRequests" asp-action="Index">Maintenance Requests</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" asp-area="Housekeeping" asp-controller="RoomStatus" asp-action="Index">Room Status</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" asp-area="Housekeeping" asp-controller="Reports" asp-action="Index">Reports</a>
+                </li>
+            </ul>
+        </nav> 
+
+        <!-- Page Content -->
+        <div class="flex-grow-1" id="content" style="margin-left: 250px;">
+            <!-- Top Bar -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+                <button class="btn btn-outline-primary me-3 d-lg-none" id="toggleSidebar">☰</button>
+                <div class="ms-auto d-flex align-items-center">
+                    <span class="me-3"><i class="fas fa-user"></i> @userEmail</span>
+                    <a href="#" class="me-3"><i class="fas fa-envelope"></i> Inbox</a>
+                    <a asp-area="" asp-controller="Auth" asp-action="Logout" class="text-danger">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </nav>
+
+            <div class="container-fluid p-3">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js" asp-append-version="true"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        document.getElementById("toggleSidebar").addEventListener("click", function () {
+            var sidebar = document.getElementById("sidebar");
+            var content = document.getElementById("content");
+            if (sidebar.style.marginLeft === "-250px") {
+                sidebar.style.marginLeft = "0";
+                content.style.marginLeft = "250px";
+            } else {
+                sidebar.style.marginLeft = "-250px";
+                content.style.marginLeft = "0";
+            }
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            function showAlert(type, title, message) {
+                Swal.fire({
+                    icon: type,
+                    title: title,
+                    text: message,
+                    position: "top",
+                    toast: true,
+                    showConfirmButton: false,
+                    timer: 3000,
+                    width: "500px",
+                    padding: "12px",
+                    background: getBackgroundColor(type),
+                    color: "#000",
+                    customClass: {
+                        popup: "swal-custom-popup",
+                        title: "swal-custom-title",
+                        content: "swal-custom-text"
+                    }
+                });
+            }
+            function getBackgroundColor(type) {
+                switch (type) {
+                    case "success": return "#d4edda";
+                    case "error": return "#f8d7da";
+                    case "warning": return "#fff3cd";
+                    default: return "#ffffff";
+                }
+            }
+            var successMessage = "@TempData["Success"]";
+            if (successMessage) {
+                showAlert("success", "Success!", successMessage);
+            }
+            var errorMessage = "@TempData["Error"]";
+            if (errorMessage) {
+                showAlert("error", "Oops!", errorMessage);
+            }
+            var warningMessage = "@TempData["Warning"]";
+            if (warningMessage) {
+                showAlert("warning", "Attention!", warningMessage);
+            }
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

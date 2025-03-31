@@ -1,39 +1,79 @@
-﻿@{
-    ViewData["Title"] = "Front Desk Dashboard";
+﻿@model HotelReservation.Areas.FrontDesk.ViewModels.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
 }
 
-<div class="container mt-4">
-    <h2>Welcome to Front Desk Dashboard</h2>
-    <p>Here you can manage check-ins, check-outs, and handle reservations.</p>
+<h2>Front Desk Dashboard</h2>
 
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card text-white bg-primary mb-3">
-                <div class="card-header">Pending Check-Ins</div>
-                <div class="card-body">
-                    <h5 class="card-title">5</h5>
-                    <p class="card-text">Guests waiting for check-in.</p>
-                </div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="card text-white bg-info mb-3">
+            <div class="card-header">Total Reservations</div>
+            <div class="card-body">
+                <h5 class="card-title">@Model.TotalReservations</h5>
             </div>
         </div>
-
-        <div class="col-md-4">
-            <div class="card text-white bg-success mb-3">
-                <div class="card-header">Checked-In Guests</div>
-                <div class="card-body">
-                    <h5 class="card-title">12</h5>
-                    <p class="card-text">Guests currently staying.</p>
-                </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-header">Today's Check-Ins</div>
+            <div class="card-body">
+                <h5 class="card-title">@Model.TodaysCheckIns</h5>
             </div>
         </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-header">Today's Check-Outs</div>
+            <div class="card-body">
+                <h5 class="card-title">@Model.TodaysCheckOuts</h5>
+            </div>
+        </div>
+    </div>
+</div>
 
-        <div class="col-md-4">
-            <div class="card text-white bg-warning mb-3">
-                <div class="card-header">Upcoming Check-Outs</div>
-                <div class="card-body">
-                    <h5 class="card-title">8</h5>
-                    <p class="card-text">Guests scheduled to check-out today.</p>
-                </div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-header">Today's Revenue</div>
+            <div class="card-body">
+                <h5 class="card-title">₱@Model.TodaysRevenue</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-dark mb-3">
+            <div class="card-header">Room Occupancy</div>
+            <div class="card-body">
+                <h5 class="card-title">@Model.RoomOccupancyPercentage.ToString("F2")%</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-danger mb-3">
+            <div class="card-header">Housekeeping Requests</div>
+            <div class="card-body">
+                <h5 class="card-title">@Model.HousekeepingRequests</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header bg-secondary text-white">
+                Quick Actions
+            </div>
+            <div class="card-body">
+                <a href="@Url.Action("Index", "CheckIn", new { area = "FrontDesk" })" class="btn btn-primary me-2">Check-In Guests</a>
+                <a href="@Url.Action("Index", "CheckOut", new { area = "FrontDesk" })" class="btn btn-success me-2">Check-Out Guests</a>
+                <a href="@Url.Action("Index", "Reservations", new { area = "FrontDesk" })" class="btn btn-info me-2">Manage Reservations</a>
+                <a href="@Url.Action("Index", "GuestSearch", new { area = "FrontDesk" })" class="btn btn-warning me-2">Guest Search</a>
+                <a href="@Url.Action("Index", "Billing", new { area = "FrontDesk" })" class="btn btn-dark me-2">Billing & Payments</a>
+                <a href="@Url.Action("Index", "Reports", new { area = "FrontDesk" })" class="btn btn-danger">Reports</a>
             </div>
         </div>
     </div>

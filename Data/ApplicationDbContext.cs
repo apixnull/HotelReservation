@@ -12,14 +12,22 @@ namespace HotelReservation.Data
         public DbSet<Reservation> Reservations { get; set; }  // ✅ Register Reservations Table
         public DbSet<Payment> Payments { get; set; }  // ✅ Register Payments Table
 
+        // ✅ Register new Housekeeping-related Tables
+        public DbSet<CleaningLog> CleaningLogs { get; set; }
+        public DbSet<HousekeepingRequest> HousekeepingRequests { get; set; }
+        public DbSet<MaintenanceRequest> MaintenanceRequests { get; set; }
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
 
             // ✅ Enforce unique constraint on User Email
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Email)
                 .IsUnique();
+
 
             // ✅ Enforce unique constraint on RoomNumber in Rooms
             modelBuilder.Entity<Room>()

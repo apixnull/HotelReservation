@@ -1,0 +1,35 @@
+﻿@model IEnumerable<HotelReservation.Models.MaintenanceRequest>
+
+@{
+    ViewData["Title"] = "Maintenance Requests";
+}
+
+<h2>Maintenance Requests</h2>
+
+<p>
+    <a class="btn btn-primary" asp-action="Create">Create New Maintenance Request</a>
+</p>
+
+<table class="table table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Request ID</th>
+            <th>Room Number</th>
+            <th>Issue</th>
+            <th>Status</th>
+            <th>Request Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model)
+        {
+            <tr>
+                <td>@request.RequestId</td>
+                <td>@(request.Room != null ? request.Room.RoomNumber : "N/A")</td>
+                <td>@request.Issue</td>
+                <td>@request.Status</td>
+                <td>@request.RequestDate.ToString("yyyy-MM-dd HH:mm")</td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -64,6 +64,11 @@ namespace HotelReservation.Controllers
                 TempData["Success"] = "Welcome Front Desk!";
                 return RedirectToAction("Index", "Dashboard", new { area = "FrontDesk" });
             }
+            else if (userRole == "Housekeeping")
+            {
+                TempData["Success"] = "Welcome Housekeeping!";
+                return RedirectToAction("Index", "Dashboard", new { area = "Housekeeping" });
+            }
 
 
             TempData["Success"] = "Login successful.";
@@ -105,9 +110,6 @@ namespace HotelReservation.Controllers
             TempData["Success"] = result.Message;
             return RedirectToAction("VerifyEmail", new { email = model.Email });
         }
-
-
-
 
 
         /***********************************************************************************************************************/

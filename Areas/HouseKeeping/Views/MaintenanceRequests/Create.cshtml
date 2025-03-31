@@ -1,0 +1,24 @@
+﻿@model HotelReservation.Models.MaintenanceRequest
+
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label class="form-label">Room Number</label>
+        <!-- Instead of binding to RoomId, we use a text input for RoomNumber -->
+        <input type="text" class="form-control" name="RoomNumber" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Issue Description</label>
+        <textarea class="form-control" asp-for="Issue" required></textarea>
+        <span asp-validation-for="Issue" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Submit Request</button>
+    <a class="btn btn-secondary" asp-action="Index">Cancel</a>
+</form>
+
+@section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+}

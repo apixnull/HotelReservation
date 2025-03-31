@@ -9,10 +9,6 @@
         {
             Context.Response.Redirect("/FrontDesk/Dashboard");
         }
-        else if (userRole == "Housekeeping" && !Context.Request.Path.StartsWithSegments("/Housekeeping"))
-        {   
-            Context.Response.Redirect("/Housekeeping/Dashboard");
-        }
 
         Layout = "_Layout"; // Default layout
     }

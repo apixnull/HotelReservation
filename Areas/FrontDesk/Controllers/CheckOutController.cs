@@ -1,12 +1,13 @@
-﻿using System.Security.Claims;
-using HotelReservation.Data;
+﻿using HotelReservation.Data;
 using HotelReservation.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace YourNamespace.Areas.FrontDesk.Controllers
 {
     [Area("FrontDesk")]
+    [Authorize(Policy = "FrontDesk,Admin")]
     public class CheckOutController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -16,6 +17,10 @@ namespace YourNamespace.Areas.FrontDesk.Controllers
             _context = context;
         }
 
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        //  Display Reservation at needs to be checkout Today
         public async Task<IActionResult> Index()
         {
             var today = DateTime.UtcNow.Date;
@@ -28,6 +33,10 @@ namespace YourNamespace.Areas.FrontDesk.Controllers
             return View(checkedInGuests);
         }
 
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        //  Mark Reservation status as Checkout
         [HttpPost]
         public async Task<IActionResult> CheckOutGuest(int id)
         {
@@ -56,13 +65,17 @@ namespace YourNamespace.Areas.FrontDesk.Controllers
             return RedirectToAction("Receipt", new { id = reservation.ReservationId });
         }
 
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        //  Generate Receipt
         public async Task<IActionResult> Receipt(int id)
         {
             var reservation = await _context.Reservations
                 .Include(r => r.Room)
                 .Include(r => r.Payment)
                 .FirstOrDefaultAsync(r => r.ReservationId == id);
-
+             
             if (reservation == null)
             {
                 return NotFound();

@@ -1,11 +1,12 @@
 ﻿using HotelReservation.Data;
-using HotelReservation.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace YourNamespace.Areas.FrontDesk.Controllers
 {
     [Area("FrontDesk")]
+    [Authorize(Policy = "FrontDesk,Admin")]
     public class GuestSearchController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -15,6 +16,10 @@ namespace YourNamespace.Areas.FrontDesk.Controllers
             _context = context;
         }
 
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        //  Display Search inputs
         public IActionResult Index()
         {
             return View();

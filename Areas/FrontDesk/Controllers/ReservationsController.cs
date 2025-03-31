@@ -3,12 +3,14 @@ using HotelReservation.Data;
 using HotelReservation.Models;
 using HotelReservation.Services;
 using HotelReservation.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace YourNamespace.Areas.FrontDesk.Controllers
 {
     [Area("FrontDesk")]
+    [Authorize(Policy = "FrontDesk,Admin")]
     public class ReservationsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -20,6 +22,13 @@ namespace YourNamespace.Areas.FrontDesk.Controllers
             _emailService = emailService;   
         }
 
+
+
+
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        //  Index
         public async Task<IActionResult> Index()
         {
             var reservations = await _context.Reservations
@@ -35,7 +44,12 @@ namespace YourNamespace.Areas.FrontDesk.Controllers
         }
 
 
-        // POST: Search Available Rooms
+
+
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        //  Search Rooms
         [HttpPost]
         public async Task<IActionResult> SearchRoom(SearchRoomViewModel model)
         {
@@ -61,7 +75,15 @@ namespace YourNamespace.Areas.FrontDesk.Controllers
         }
 
 
-        // GET: Create Reservation Page
+
+
+
+
+
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        //  Create
         public async Task<IActionResult> Create(int roomId, DateTime checkIn, DateTime checkOut)
         {
             var room = await _context.Rooms.FindAsync(roomId);
@@ -151,7 +173,14 @@ namespace YourNamespace.Areas.FrontDesk.Controllers
             return RedirectToAction("Index", "Payment", new { area = "FrontDesk", reservationId = model.ReservationId });
         }
 
-        // GET: Details
+
+
+
+
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        //  Details
         public async Task<IActionResult> Details(int id)
         {
             var reservation = await _context.Reservations
@@ -195,7 +224,18 @@ namespace YourNamespace.Areas.FrontDesk.Controllers
             return View(viewModel);
         }
 
-        // GET: Edit Reservation
+
+
+
+
+
+
+
+
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        //  Edit
         public async Task<IActionResult> Edit(int id)
         {
             var reservation = await _context.Reservations.FindAsync(id);
@@ -240,6 +280,11 @@ namespace YourNamespace.Areas.FrontDesk.Controllers
             return RedirectToAction("Index");
         }
 
+
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        //  Delete
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)

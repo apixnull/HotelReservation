@@ -11,17 +11,21 @@ namespace HotelReservation.Models
     }
 
     public class User
+
     {
         [Key]
         public int UserId { get; set; }
 
-        [MaxLength(50)]
+   
+        [StringLength(50)]
         public string? FirstName { get; set; }
 
-        [MaxLength(50)]
+        [StringLength(50)]
         public string? LastName { get; set; }
 
-        [Required, MaxLength(100)]
+        [Required]
+        [EmailAddress]
+        [StringLength(100)]
         public string Email { get; set; } = string.Empty;
 
         [MaxLength(20)]
@@ -33,7 +37,12 @@ namespace HotelReservation.Models
         public string? ProfilePicture { get; set; }
 
         [Required]
+        [DataType(DataType.Password)]
         public string Password { get; set; } = string.Empty;
+
+        // New fields for tracking user activity:
+        public DateTime? LastLoginDate { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

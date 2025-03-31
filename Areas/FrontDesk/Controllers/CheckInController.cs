@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using HotelReservation.Data;
 using HotelReservation.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace YourNamespace.Areas.FrontDesk.Controllers
 {
     [Area("FrontDesk")]
-
+    [Authorize(Policy = "FrontDesk,Admin")] 
     public class CheckInController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -18,6 +19,10 @@ namespace YourNamespace.Areas.FrontDesk.Controllers
             _context = context;
         }
 
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        //  Display Check in for today
         public async Task<IActionResult> Index()
         {
             var today = DateTime.UtcNow.Date;
@@ -31,6 +36,10 @@ namespace YourNamespace.Areas.FrontDesk.Controllers
         }
 
 
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        //  Mark The Reseravtion Status as Checkin 
         [HttpPost]
         public async Task<IActionResult> CheckInGuest(int id)
         {
