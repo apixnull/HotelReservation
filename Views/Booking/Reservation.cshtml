@@ -1,180 +1,180 @@
-﻿@model HotelReservation.ViewModels.ReservationViewModel
+﻿<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+@model HotelReservation.ViewModels.ReservationViewModel
 
 @{
-    Layout = null;
+    ViewData["Title"] = "Reserve a Room";
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Reserve a Room</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
 
-        .container-full {
-            display: flex;
-            height: 100vh;
+<!-- Room Images Display -->
+<div class="container my-4 text-center">
+    <div class="row justify-content-center">
+        @if (!string.IsNullOrEmpty(Model.RoomImage1) && !string.IsNullOrEmpty(Model.RoomImage2))
+        {
+            <!-- Two images side by side -->
+            <div class="col-md-5">
+                <img src="@Model.RoomImage1" class="img-fluid rounded shadow-sm" style="max-width: 100%; height: 250px; object-fit: cover;" alt="Room Image 1">
+            </div>
+            <div class="col-md-5">
+                <img src="@Model.RoomImage2" class="img-fluid rounded shadow-sm" style="max-width: 100%; height: 250px; object-fit: cover;" alt="Room Image 2">
+            </div>
         }
+        else if (!string.IsNullOrEmpty(Model.RoomImage1))
+        {
+            <!-- Only one image -->
+            <div class="col-md-6">
+                <img src="@Model.RoomImage1" class="img-fluid rounded shadow-sm" style="max-width: 80%; height: 300px; object-fit: cover;" alt="Room Image 1">
+            </div>
+        }
+        else if (!string.IsNullOrEmpty(Model.RoomImage2))
+        {
+            <!-- Only one image -->
+            <div class="col-md-6">
+                <img src="@Model.RoomImage2" class="img-fluid rounded shadow-sm" style="max-width: 80%; height: 300px; object-fit: cover;" alt="Room Image 2">
+            </div>
+        }
+    </div>
+</div>
 
-        .room-gallery {
-            flex: 1;
-            overflow: hidden;
-        }
+<!-- Booking Form -->
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-body bg-light p-4">
+                    <h2 class="card-title text-center text-info">@Model.RoomType Room</h2>
+                    <p class="text-muted">@Model.RoomDescription</p>
+                    <p><strong class="text-success">Price per night:</strong> ₱@Model.TotalPrice</p>
+                    <p><strong class="text-warning">Max Occupancy:</strong> @Model.MaxOccupancy guests</p>
+                    <hr class="my-4">
+                    <h4 class="text-primary text-center mb-4">Reserve Your Stay</h4>
+                    <form asp-controller="Booking" asp-action="Reservation" method="post" onsubmit="return validateDates()">
+                        <!-- Hidden fields for essential data -->
+                        <input type="hidden" asp-for="RoomId" />
+                        <input type="hidden" asp-for="TotalPrice" id="TotalPrice" />
+                        <input type="hidden" asp-for="BookingReference" />
 
-        .booking-details {
-            flex: 1;
-            padding: 40px;
-            background: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            box-shadow: -5px 0px 15px rgba(0, 0, 0, 0.1);
-        }
-    </style>
-</head>
-<body>
-    <div class="container-full">
-        <!-- Image Slider -->
-        <div class="room-gallery">
-            <div id="roomCarousel" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-inner">
-                    <div class="carousel-item active">
-                        <img src="@Model.RoomImage1" class="d-block w-100" alt="Room Image">
-                    </div>
-                    @if (!string.IsNullOrEmpty(Model.RoomImage2))
-                    {
-                        <div class="carousel-item">
-                            <img src="@Model.RoomImage2" class="d-block w-100" alt="Room Image 2">
+                        <div class="mb-3">
+                            <label asp-for="GuestName" class="form-label text-info">Guest Name</label>
+                            <input asp-for="GuestName" class="form-control shadow-sm" required />
+                            <span asp-validation-for="GuestName" class="text-danger"></span>
                         </div>
-                    }
+                        <div class="mb-3">
+                            <label asp-for="GuestEmail" class="form-label text-info">Email Address</label>
+                            <input asp-for="GuestEmail" class="form-control shadow-sm" required />
+                            <span asp-validation-for="GuestEmail" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="GuestPhone" class="form-label text-info">Phone Number</label>
+                            <input asp-for="GuestPhone" class="form-control shadow-sm" />
+                            <span asp-validation-for="GuestPhone" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="CheckInDate" class="form-label text-info">Check-in Date</label>
+                            <!-- Note: Only one class attribute per element -->
+                            <input asp-for="CheckInDate" class="form-control shadow-sm checkin border-warning py-1 px-2 bg-white" type="date" id="CheckInDate" placeholder="yy/mm/dd" required readonly />
+
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="CheckOutDate" class="form-label text-info">Check-out Date</label>
+                            <input asp-for="CheckOutDate" class="form-control shadow-sm checkout border-warning py-1 px-2 bg-white" type="date" id="CheckOutDate" placeholder="yy/mm/dd" required readonly/>
+                          
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Adults" class="form-label text-info">Adults</label>
+                            <input asp-for="Adults" class="form-control shadow-sm" type="number" min="1" max="20" required />
+                            <span asp-validation-for="Adults" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Children" class="form-label text-info">Children</label>
+                            <input asp-for="Children" class="form-control shadow-sm" type="number" min="0" max="20" required />
+                            <span asp-validation-for="Children" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="SpecialRequest" class="form-label text-info">Special Requests</label>
+                            <textarea asp-for="SpecialRequest" class="form-control shadow-sm"></textarea>
+                            <span asp-validation-for="SpecialRequest" class="text-danger"></span>
+                        </div>
+
+                        <!-- Display computed total price -->
+                        <div class="mb-3">
+                            <h5 class="text-success">Total Price: <span id="displayTotalPrice">₱0.00</span></h5>
+                        </div>
+
+                        <button type="submit" class="btn btn-lg btn-primary w-100 shadow-lg">Proceed to Checkout</button>
+                    </form>
                 </div>
             </div>
         </div>
-
-        <!-- Booking Form -->
-        <div class="booking-details">
-            <h2>@Model.RoomType Room</h2>
-            <p>@Model.RoomDescription</p>
-            <p><strong>Price per night:</strong> ₱@Model.TotalPrice</p>
-            <p><strong>Max Occupancy:</strong> @Model.MaxOccupancy guests</p>
-            <hr>
-            <h4>Reserve Your Stay</h4>
-            <form asp-controller="Booking" asp-action="Reservation" method="post">
-                <!-- Hidden fields for essential data -->
-                <input type="hidden" asp-for="RoomId" />
-                <input type="hidden" asp-for="TotalPrice" id="TotalPrice" />
-                <input type="hidden" asp-for="BookingReference" />
-
-                <div class="mb-3">
-                    <label asp-for="GuestName" class="form-label"></label>
-                    <input asp-for="GuestName" class="form-control" required />
-                    <span asp-validation-for="GuestName" class="text-danger"></span>
-                </div>
-                <div class="mb-3">
-                    <label asp-for="GuestEmail" class="form-label"></label>
-                    <input asp-for="GuestEmail" class="form-control" required />
-                    <span asp-validation-for="GuestEmail" class="text-danger"></span>
-                </div>
-                <div class="mb-3">
-                    <label asp-for="GuestPhone" class="form-label"></label>
-                    <input asp-for="GuestPhone" class="form-control" />
-                    <span asp-validation-for="GuestPhone" class="text-danger"></span>
-                </div>
-                <div class="mb-3">
-                    <label asp-for="CheckInDate" class="form-label"></label>
-                    <input asp-for="CheckInDate" class="form-control" type="date" id="CheckInDate" required />
-                    <span asp-validation-for="CheckInDate" class="text-danger"></span>
-                </div>
-                <div class="mb-3">
-                    <label asp-for="CheckOutDate" class="form-label"></label>
-                    <input asp-for="CheckOutDate" class="form-control" type="date" id="CheckOutDate" required />
-                    <span asp-validation-for="CheckOutDate" class="text-danger"></span>
-                </div>
-                <div class="mb-3">
-                    <label asp-for="Adults" class="form-label"></label>
-                    <input asp-for="Adults" class="form-control" type="number" min="1" max="20" required />
-                    <span asp-validation-for="Adults" class="text-danger"></span>
-                </div>
-                <div class="mb-3">
-                    <label asp-for="Children" class="form-label"></label>
-                    <input asp-for="Children" class="form-control" type="number" min="0" max="20" required />
-                    <span asp-validation-for="Children" class="text-danger"></span>
-                </div>
-                <div class="mb-3">
-                    <label asp-for="SpecialRequest" class="form-label"></label>
-                    <textarea asp-for="SpecialRequest" class="form-control"></textarea>
-                    <span asp-validation-for="SpecialRequest" class="text-danger"></span>
-                </div>
-
-                <!-- Display computed total price -->
-                <div class="mb-3">
-                    <h5>Total Price: <span id="displayTotalPrice">₱0.00</span></h5>
-                </div>
-
-                <button type="submit" class="btn btn-primary w-100">Proceed to Checkout</button>
-            </form>
-        </div>
     </div>
+</div>
 
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
-        $(document).ready(function () {
-            // Set minimum dates for check-in and check-out (today)
-            var today = new Date().toISOString().split('T')[0];
-            $("#CheckInDate").attr("min", today);
-            $("#CheckOutDate").attr("min", today);
+        document.addEventListener("DOMContentLoaded", function () {
+            var today = new Date();
+            var todayStr = today.toISOString().split('T')[0];
+            // Set minimum dates
+            document.getElementById("CheckInDate").setAttribute("min", todayStr);
+            document.getElementById("CheckOutDate").setAttribute("min", todayStr);
+
+            // Initialize Flatpickr for CheckIn and CheckOut
+            flatpickr("#CheckInDate", {
+                dateFormat: "Y-m-d",
+                minDate: today,
+                onChange: function (selectedDates) {
+                    if (selectedDates.length > 0) {
+                        let minCheckoutDate = new Date(selectedDates[0]);
+                        minCheckoutDate.setDate(minCheckoutDate.getDate() + 1);
+                        // Disable further changes to the check-in date and lock the check-out date.
+                        document.getElementById("CheckInDate").setAttribute("disabled", "true");
+                        document.getElementById("CheckOutDate").removeAttribute("disabled");
+                        flatpickr("#CheckOutDate", {
+                            dateFormat: "Y-m-d",
+                            minDate: minCheckoutDate
+                        });
+                        // Reset CheckOut value when CheckIn changes
+                        document.getElementById("CheckOutDate").value = "";
+                        updateTotalPrice();
+                    }
+                }
+            });
+
+            flatpickr("#CheckOutDate", {
+                dateFormat: "Y-m-d",
+                minDate: today,
+                onChange: function () {
+                    updateTotalPrice();
+                }
+            });
 
             function updateTotalPrice() {
-                var checkInVal = $("#CheckInDate").val();
-                var checkOutVal = $("#CheckOutDate").val();
-                var pricePerNight = parseFloat('@Model.TotalPrice'); // Using TotalPrice as price per night
+                var checkInVal = document.getElementById("CheckInDate").value;
+                var checkOutVal = document.getElementById("CheckOutDate").value;
+                var pricePerNight = parseFloat('@Model.TotalPrice');
 
                 if (checkInVal && checkOutVal) {
                     var checkInDate = new Date(checkInVal);
                     var checkOutDate = new Date(checkOutVal);
 
-                    // Validate check-in is not in the past
-                    if (checkInDate < new Date(today)) {
-                        Swal.fire("Invalid Date", "Check-in date cannot be in the past!", "error");
-                        $("#CheckInDate").val("");
-                        $("#displayTotalPrice").text("₱0.00");
-                        return;
-                    }
-
-                    // Validate check-out is after check-in
-                    if (checkOutDate <= checkInDate) {
-                        Swal.fire("Invalid Date", "Check-out date must be after check-in date!", "error");
-                        $("#CheckOutDate").val("");
-                        $("#displayTotalPrice").text("₱0.00");
-                        return;
-                    }
-
-                    // Calculate the difference in days
-                    var timeDiff = checkOutDate.getTime() - checkInDate.getTime();
-                    var nights = timeDiff / (1000 * 3600 * 24);
+                    var nights = (checkOutDate - checkInDate) / (1000 * 3600 * 24);
                     var computedPrice = nights * pricePerNight;
-
-                    // Update the display and hidden field
-                    $("#displayTotalPrice").text("₱" + computedPrice.toFixed(2));
-                    $("#TotalPrice").val(computedPrice.toFixed(2));
+                    document.getElementById("displayTotalPrice").textContent = "₱" + computedPrice.toFixed(2);
+                    document.getElementById("TotalPrice").value = computedPrice.toFixed(2);
                 }
             }
 
-            $("#CheckInDate, #CheckOutDate").on("change", updateTotalPrice);
-
-            $("form").validate();
+            // Run updateTotalPrice on page load in case dates are prefilled
+            updateTotalPrice();
         });
-    </script>
 
-    <!-- Additional scripts if needed -->
-    <partial name="_ValidationScriptsPartial" />
-</body>
-</html>
+        // Validation function for form submission (No date validation anymore)
+        function validateDates() {
+            // Just return true, no validation necessary anymore
+            return true;
+        }
+    </script>
+}

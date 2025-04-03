@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace YourNamespace.Areas.FrontDesk.Controllers
 {
     [Area("FrontDesk")]
-    [Authorize(Policy = "FrontDesk,Admin")]
+    [Authorize(Policy = "FrontDeskOnly")]
     public class GuestSearchController : Controller
     {
         private readonly ApplicationDbContext _context;

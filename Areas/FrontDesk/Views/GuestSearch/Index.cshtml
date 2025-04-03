@@ -4,47 +4,62 @@
     ViewData["Title"] = "Guest Search";
 }
 
-<h2>Guest Search</h2>
+<div class="container d-flex justify-content-center align-items-center flex-column mt-4">
+    <div class="card shadow-lg p-4" style="max-width: 600px; width: 100%;">
+        <h2 class="text-center fw-bold mb-3">Guest Search</h2>
 
-<form method="post" asp-action="Search">
-    <div class="input-group mb-3">
-        <input type="text" name="searchTerm" class="form-control" placeholder="Enter Name, Email, or Booking Reference" required>
-        <button type="submit" class="btn btn-primary">Search</button>
+        <form method="post" asp-action="Search">
+            <div class="input-group">
+                <input type="text" name="searchTerm" class="form-control" placeholder="Enter Name, Email, or Booking Reference" required>
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+
     </div>
-</form>
+</div>
 
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger">@TempData["Error"]</div>
-}
-
-@if (Model != null && Model.Any())
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Booking Ref</th>
-                <th>Guest Name</th>
-                <th>Email</th>
-                <th>Room</th>
-                <th>Check-In</th>
-                <th>Check-Out</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var reservation in Model)
-            {
-                <tr>
-                    <td>@reservation.BookingReference</td>
-                    <td>@reservation.GuestName</td>
-                    <td>@reservation.GuestEmail</td>
-                    <td>@(reservation.Room != null ? reservation.Room.RoomNumber : "N/A")</td>
-                    <td>@reservation.CheckInDate.ToShortDateString()</td>
-                    <td>@reservation.CheckOutDate.ToShortDateString()</td>
-                    <td>@reservation.Status</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+<div class="container mt-4">
+    @if (Model != null && Model.Any())
+    {
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white fw-bold text-center">Search Results</div>
+            <div class="card-body p-0">
+                <table class="table table-striped table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Booking Ref</th>
+                            <th>Guest Name</th>
+                            <th>Email</th>
+                            <th>Room</th>
+                            <th>Check-In</th>
+                            <th>Check-Out</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var reservation in Model)
+                        {
+                            <tr>
+                                <td>@reservation.BookingReference</td>
+                                <td>@reservation.GuestName</td>
+                                <td>@reservation.GuestEmail</td>
+                                <td>@(reservation.Room != null ? reservation.Room.RoomNumber : "N/A")</td>
+                                <td>@reservation.CheckInDate.ToShortDateString()</td>
+                                <td>@reservation.CheckOutDate.ToShortDateString()</td>
+                                <td>
+                                    <span class="badge @(reservation.Status == HotelReservation.Models.ReservationStatus.CheckedIn ? "bg-success" : "bg-warning text-dark")">
+                                        @reservation.Status
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center">No guests found matching the search criteria.</div>
+    }
+</div>

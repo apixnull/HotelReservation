@@ -1,27 +1,172 @@
 ﻿@model HotelReservation.Models.Reservation
 
 @{
-    Layout = "_Layout"; // or your preferred layout
+    ViewData["Title"] = "Reservation Summary";
 }
 
-<div class="container mt-5">
-    <div class="card shadow-sm">
-        <div class="card-header bg-success text-white">
-            <h3 class="card-title">Reservation Confirmed</h3>
+<div class="container my-5">
+    <h2 class="text-center text-info mb-4">Reservation Summary</h2>
+
+    <!-- Room Image Display (if available) -->
+    @if (Model.Room != null && !string.IsNullOrEmpty(Model.Room.Image1))
+    {
+        <div class="text-center mb-4">
+            <img src="@Model.Room.Image1" class="img-fluid rounded shadow-sm" style="max-width: 300px; height: auto; object-fit: cover;" alt="Room Image" />
         </div>
-        <div class="card-body">
-            <p><strong>Booking Reference:</strong> @Model.BookingReference</p>
-            <p><strong>Room Number:</strong> @Model.Room?.RoomNumber</p>
-            <p><strong>Room Type:</strong> @Model.Room?.RoomType</p>
-            <p><strong>Description:</strong> @Model.Room?.Description</p>
-            <p><strong>Check-In Date:</strong> @Model.CheckInDate.ToShortDateString()</p>
-            <p><strong>Check-Out Date:</strong> @Model.CheckOutDate.ToShortDateString()</p>
-            <p><strong>Total Price:</strong> ₱@Model.TotalPrice</p>
-            <p><strong>Status:</strong> @Model.Status</p>
+    }
+
+    <div class="row">
+        <!-- Reservation Details -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white text-center">
+                    <h5 class="mb-0">Reservation Details</h5>
+                </div>
+                <div class="card-body p-3">
+                    <table class="table table-sm mb-0">
+                        <tbody>
+                            <tr>
+                                <th>Booking Ref.</th>
+                                <td>@Model.BookingReference</td>
+                            </tr>
+                            <tr>
+                                <th>Guest Name</th>
+                                <td>@Model.GuestName</td>
+                            </tr>
+                            <tr>
+                                <th>Email</th>
+                                <td>@Model.GuestEmail</td>
+                            </tr>
+                            <tr>
+                                <th>Phone</th>
+                                <td>@Model.GuestPhone</td>
+                            </tr>
+                            <tr>
+                                <th>Check-In</th>
+                                <td>@Model.CheckInDate.ToShortDateString()</td>
+                            </tr>
+                            <tr>
+                                <th>Check-Out</th>
+                                <td>@Model.CheckOutDate.ToShortDateString()</td>
+                            </tr>
+                            <tr>
+                                <th>Adults</th>
+                                <td>@Model.Adults</td>
+                            </tr>
+                            <tr>
+                                <th>Children</th>
+                                <td>@Model.Children</td>
+                            </tr>
+                            <tr>
+                                <th>Total Price</th>
+                                <td>₱@Model.TotalPrice</td>
+                            </tr>
+                            <tr>
+                                <th>Status</th>
+                                <td>@Model.Status</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-        <div class="card-footer text-center">
-            <a href="@Url.Action("Index", "Home")" class="btn btn-primary me-2">Return Home</a>
-            <a href="@Url.Action("Reservations", "Booking")" class="btn btn-secondary">View All Reservations</a>
+
+        <!-- Room Details -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-success text-white text-center">
+                    <h5 class="mb-0">Room Details</h5>
+                </div>
+                <div class="card-body p-3">
+                    @if (Model.Room != null)
+                    {
+                        <table class="table table-sm mb-0">
+                            <tbody>
+                                <tr>
+                                    <th>Room Number</th>
+                                    <td>@Model.Room.RoomNumber</td>
+                                </tr>
+                                <tr>
+                                    <th>Room Type</th>
+                                    <td>@Model.Room.RoomType</td>
+                                </tr>
+                                <tr>
+                                    <th>Description</th>
+                                    <td>@Model.Room.Description</td>
+                                </tr>
+                                <tr>
+                                    <th>Max Occupancy</th>
+                                    <td>@Model.Room.MaxOccupancy</td>
+                                </tr>
+                                <tr>
+                                    <th>Status</th>
+                                    <td>@Model.Room.Status</td>
+                                </tr>
+                                <tr>
+                                    <th>Last Cleaned</th>
+                                    <td>
+                                        @(Model.Room.LastCleaned.HasValue ? Model.Room.LastCleaned.Value.ToShortDateString() : "N/A")
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Room details not available.</p>
+                    }
+                </div>
+            </div>
         </div>
+
+        <!-- Payment Details -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-warning text-white text-center">
+                    <h5 class="mb-0">Payment Details</h5>
+                </div>
+                <div class="card-body p-3">
+                    @if (Model.Payment != null)
+                    {
+                        <table class="table table-sm mb-0">
+                            <tbody>
+                                <tr>
+                                    <th>Payment ID</th>
+                                    <td>@Model.Payment.PaymentId</td>
+                                </tr>
+                                <tr>
+                                    <th>Amount</th>
+                                    <td>₱@Model.Payment.Amount</td>
+                                </tr>
+                                <tr>
+                                    <th>Status</th>
+                                    <td>@Model.Payment.Status</td>
+                                </tr>
+                                <tr>
+                                    <th>Txn Date</th>
+                                    <td>@Model.Payment.TransactionDate.ToShortDateString()</td>
+                                </tr>
+                                <tr>
+                                    <th>GCash #</th>
+                                    <td>@Model.Payment.GCashNumber</td>
+                                </tr>
+                                <tr>
+                                    <th>GCash Txn ID</th>
+                                    <td>@Model.Payment.GCashTransactionId</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Payment details not available.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-3">
+        <a href="@Url.Action("Index", "Home")" class="btn btn-primary">Return Home</a>
     </div>
 </div>

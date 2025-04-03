@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace YourNamespace.Areas.FrontDesk.Controllers
 {
     [Area("FrontDesk")]
-    [Authorize(Policy = "FrontDesk,Admin")] 
+    [Authorize(Policy = "FrontDeskOnly")]
     public class CheckInController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -27,13 +27,13 @@ namespace YourNamespace.Areas.FrontDesk.Controllers
         {
             var today = DateTime.UtcNow.Date;
             var reservations = await _context.Reservations
-                .Where(r => r.CheckInDate == today &&
-                            r.Status == ReservationStatus.Pending || r.Status == ReservationStatus.CheckedIn) // ✅ Include Confirmed
+                .Where(r => r.CheckInDate.Date == today)
                 .Include(r => r.Room)
                 .ToListAsync();
 
-            return View(reservations);
+            return View(reservations); // Passing full list directly
         }
+
 
 
         /***********************************************************************************************************************/

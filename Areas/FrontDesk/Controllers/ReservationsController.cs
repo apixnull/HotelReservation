@@ -1,4 +1,5 @@
-﻿using HotelReservation.Areas.FrontDesk.ViewModels;
+﻿using System.Security.Claims;
+using HotelReservation.Areas.FrontDesk.ViewModels;
 using HotelReservation.Data;
 using HotelReservation.Models;
 using HotelReservation.Services;
@@ -6,11 +7,12 @@ using HotelReservation.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace YourNamespace.Areas.FrontDesk.Controllers
 {
     [Area("FrontDesk")]
-    [Authorize(Policy = "FrontDesk,Admin")]
+    [Authorize(Policy = "FrontDeskOnly")]
     public class ReservationsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -35,21 +37,32 @@ namespace YourNamespace.Areas.FrontDesk.Controllers
                 .Include(r => r.Room)
                 .ToListAsync();
 
+            // No need to modify the actual date values, but format them for display in the view
+            foreach (var reservation in reservations)
+            {
+                // Convert to local time if needed and format the dates
+                reservation.CheckInDate = reservation.CheckInDate.ToLocalTime();
+                reservation.CheckOutDate = reservation.CheckOutDate.ToLocalTime();
+            }
+
             return View(reservations);
         }
 
+
+
+
+
+
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+
         public IActionResult SearchRoom()
         {
-            return View(new SearchRoomViewModel());
+            return View(new SearchRoomViewModel { AvailableRooms = new List<Room>() });
         }
-
-
-
-
-        /***********************************************************************************************************************/
-        /***********************************************************************************************************************/
-        /***********************************************************************************************************************/
         //  Search Rooms
+
         [HttpPost]
         public async Task<IActionResult> SearchRoom(SearchRoomViewModel model)
         {
@@ -58,17 +71,18 @@ namespace YourNamespace.Areas.FrontDesk.Controllers
                 return View("SearchRoom", model);
             }
 
-            // Fetch available rooms
             var availableRooms = await _context.Rooms
-                .Where(r => r.MaxOccupancy >= model.MaxOccupancy &&
-                            r.RoomType == model.SelectedRoomType &&
-                            r.Status == RoomStatus.Available &&
-                            !_context.Reservations.Any(res =>
-                                res.RoomId == r.RoomId &&
-                                res.Status != ReservationStatus.CheckedOut && // Only consider active reservations
-                                ((model.CheckInDate >= res.CheckInDate && model.CheckInDate < res.CheckOutDate) ||
-                                 (model.CheckOutDate > res.CheckInDate && model.CheckOutDate <= res.CheckOutDate))))
-                .ToListAsync();
+              .AsNoTracking()
+              .Where(r =>
+                  r.MaxOccupancy >= model.MaxOccupancy &&
+                  (model.SelectedRoomType == 0 || r.RoomType == model.SelectedRoomType) && // ✅ No more warning
+                  r.Status == RoomStatus.Available &&
+                  !_context.Reservations
+                      .Where(res => res.RoomId == r.RoomId && res.Status != ReservationStatus.CheckedOut)
+                      .Any(res => model.CheckInDate < res.CheckOutDate && model.CheckOutDate > res.CheckInDate)
+              )
+              .ToListAsync();
+
 
             model.AvailableRooms = availableRooms;
             return View("SearchRoom", model);
@@ -86,34 +100,29 @@ namespace YourNamespace.Areas.FrontDesk.Controllers
         //  Create
         public async Task<IActionResult> Create(int roomId, DateTime checkIn, DateTime checkOut)
         {
-            var room = await _context.Rooms.FindAsync(roomId);
+            var room = await _context.Rooms.FirstOrDefaultAsync(r => r.RoomId == roomId);
             if (room == null)
             {
                 return NotFound();
             }
 
-            // Ensure minimum stay of 1 night
-            int nights = (int)(checkOut - checkIn).TotalDays;
-            if (nights < 1) nights = 1;
-
-            var viewModel = new ReservationViewModel
+            // Create the view model and populate with room details
+            var reservationViewModel = new ReservationViewModel
             {
                 RoomId = room.RoomId,
-                RoomNumber = room.RoomNumber,
+                TotalPrice = room.Price,
+                CheckInDate = checkIn,
+                CheckOutDate = checkOut,
+                RoomImage1 = room.Image1,
+                RoomImage2 = room.Image2,
                 RoomType = room.RoomType.ToString(),
                 RoomDescription = room.Description,
                 MaxOccupancy = room.MaxOccupancy,
-                RoomImage1 = room.Image1,
-                RoomImage2 = room.Image2,
-                TotalPrice = room.Price * nights,
-                CheckInDate = checkIn,
-                CheckOutDate = checkOut,
                 BookingReference = Guid.NewGuid().ToString("N").Substring(0, 10).ToUpper()
             };
 
-            return View(viewModel);
+            return View(reservationViewModel);
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -121,34 +130,37 @@ namespace YourNamespace.Areas.FrontDesk.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-                TempData["Error"] = "Invalid reservation details: " + string.Join(", ", errors);
                 return View(model);
             }
 
+            // Ensure UserId is set if the user is authenticated
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                model.UserId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "0");
+                if (model.UserId == 0)
+                {
+                    TempData["Error"] = "User identification failed.";
+                    return RedirectToAction("Index", "Home");
+                }
+            }
+
+            // Fetch the room first to update its status
             var room = await _context.Rooms.FindAsync(model.RoomId);
-            if (room == null)
+            if (room == null || room.Status != RoomStatus.Available)
             {
-                TempData["Error"] = "Selected room is not available.";
-                return View(model);
+                TempData["Error"] = "Sorry, the room is no longer available.";
+                return RedirectToAction("Index", "Home"); // Or return to the reservation form
             }
 
-            int nights = (int)(model.CheckOutDate - model.CheckInDate).TotalDays;
-            if (nights < 1)
-            {
-                TempData["Error"] = "Check-Out Date must be after Check-In Date.";
-                return View(model);
-            }
+            // Update the room status to "Pending"
+            room.Status = RoomStatus.Pending;
+            room.LastStatusUpdate = DateTime.UtcNow;
 
-            if (string.IsNullOrEmpty(model.BookingReference))
-            {
-                model.BookingReference = Guid.NewGuid().ToString("N").Substring(0, 10).ToUpper();
-            }
-
+            // Create a pending reservation record
             var reservation = new Reservation
             {
                 RoomId = model.RoomId,
-                UserId = model.UserId,
+                UserId = model.UserId,  // UserId will be set if authenticated
                 GuestName = model.GuestName,
                 GuestEmail = model.GuestEmail,
                 GuestPhone = model.GuestPhone,
@@ -156,7 +168,7 @@ namespace YourNamespace.Areas.FrontDesk.Controllers
                 CheckOutDate = model.CheckOutDate,
                 Adults = model.Adults,
                 Children = model.Children,
-                TotalPrice = room.Price * nights,
+                TotalPrice = model.TotalPrice,
                 BookingReference = model.BookingReference,
                 IsPaid = false,
                 SpecialRequest = model.SpecialRequest,
@@ -164,14 +176,27 @@ namespace YourNamespace.Areas.FrontDesk.Controllers
                 CreatedAt = DateTime.UtcNow
             };
 
-            _context.Reservations.Add(reservation);
-            await _context.SaveChangesAsync();
+            try
+            {
+                // Save reservation and update room status in one transaction
+                _context.Reservations.Add(reservation);
+                _context.Rooms.Update(room);  // Update the room status as well
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                // Log exception (optional: Log to file, database, etc.)
+                TempData["Error"] = "There was an error while processing your reservation. Please try again later.";
+                return RedirectToAction("Index", "Home");
+            }
 
-            model.ReservationId = reservation.ReservationId;
+            // Optionally store the reservation ID in TempData to retrieve later in the checkout process
+            TempData["ReservationId"] = reservation.ReservationId;
 
-            TempData["Success"] = "Reservation created successfully! Proceeding to CheckoutProcess.";
-            return RedirectToAction("Index", "Payment", new { area = "FrontDesk", reservationId = model.ReservationId });
+            // Redirect to the checkout page
+            return RedirectToAction("Checkout", "Payment", new { area = "FrontDesk" });
         }
+
 
 
 
@@ -223,13 +248,6 @@ namespace YourNamespace.Areas.FrontDesk.Controllers
 
             return View(viewModel);
         }
-
-
-
-
-
-
-
 
 
         /***********************************************************************************************************************/

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace YourNamespace.Areas.FrontDesk.Controllers
 {
     [Area("FrontDesk")]
-    [Authorize(Policy = "FrontDesk,Admin")]
+    [Authorize(Policy = "FrontDeskOnly")]
     public class CheckOutController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -24,14 +24,16 @@ namespace YourNamespace.Areas.FrontDesk.Controllers
         public async Task<IActionResult> Index()
         {
             var today = DateTime.UtcNow.Date;
-            var checkedInGuests = await _context.Reservations
-                .Where(r => r.Status == ReservationStatus.CheckedIn)
+
+            var reservations = await _context.Reservations
+                .Where(r => r.Status == ReservationStatus.CheckedIn ||
+                            (r.Status == ReservationStatus.CheckedOut && r.ActualCheckOut >= today))
                 .Include(r => r.Room)
-                .Include(r => r.CheckedInByUser)
                 .ToListAsync();
 
-            return View(checkedInGuests);
+            return View(reservations);
         }
+
 
         /***********************************************************************************************************************/
         /***********************************************************************************************************************/

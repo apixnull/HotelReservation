@@ -1,4 +1,7 @@
-﻿@model IEnumerable<HotelReservation.Models.Room>
+﻿<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+@model IEnumerable<HotelReservation.Models.Room>
 
 @{
     ViewData["Title"] = "Available Rooms";
@@ -8,30 +11,6 @@
 <div class="slider-area">
     <!-- Mobile Menu -->
     <div class="slider-active dot-style">
-        <div class="single-slider  hero-overly slider-height d-flex align-items-center" data-background="/assets/img/hero/h1_hero.jpg">
-            <div class="container">
-                <div class="row justify-content-center text-center">
-                    <div class="col-xl-9">
-                        <div class="h1-slider-caption">
-                            <h1 data-animation="fadeInUp" data-delay=".4s">top hotel in the city</h1>
-                            <h3 data-animation="fadeInDown" data-delay=".4s">Hotel & Resourt</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="single-slider  hero-overly slider-height d-flex align-items-center" data-background="/assets/img/hero/h1_hero.jpg">
-            <div class="container">
-                <div class="row justify-content-center text-center">
-                    <div class="col-xl-9">
-                        <div class="h1-slider-caption">
-                            <h1 data-animation="fadeInUp" data-delay=".4s">top hotel in the city</h1>
-                            <h3 data-animation="fadeInDown" data-delay=".4s">Hotel & Resourt</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="single-slider  hero-overly slider-height d-flex align-items-center" data-background="/assets/img/hero/h1_hero.jpg">
             <div class="container">
                 <div class="row justify-content-center text-center">
@@ -62,7 +41,9 @@
                                 <span> Check In Date:</span>
                             </div>
                             <div class="boking-datepicker">
-                                <input name="CheckInDate" id="datepicker1" value="@Context.Request.Query["CheckInDate"]" placeholder="mm/dd/yy" required />
+                                <input name="CheckInDate" type="date" class="checkin form-control border-warning py-1 px-2 bg-white"
+                                       value="@(ViewData["CheckInDate"] != null ? Convert.ToDateTime(ViewData["CheckInDate"]).ToString("yyyy-MM-dd") : "")"
+                                       placeholder="yyyy-mm-dd" required />
                             </div>
                         </div>
                         <!-- Single Select Box -->
@@ -72,11 +53,13 @@
                                 <span>Check OutDate:</span>
                             </div>
                             <div class="boking-datepicker">
-                                <input name="CheckOutDate" id="datepicker2" value="@Context.Request.Query["CheckOutDate"]" placeholder="mm/dd/yy" required />
+                                <input name="CheckOutDate" type="date" class="checkout form-control border-warning py-1 px-2 bg-white"
+                                       value="@(ViewData["CheckOutDate"] != null ? Convert.ToDateTime(ViewData["CheckOutDate"]).ToString("yyyy-MM-dd") : "")"
+                                       placeholder="yyyy-mm-dd" required disabled />
                             </div>
                         </div>
 
-                        <!-- ✅ Max Occupancy (Replaces Adults & Children) -->
+                        <!-- ✅ Max Occupancy (Replaces Adults & Children) --> 
                         <div class="single-select-box mb-30">
                             <div class="boking-tittle">
                                 <span>Max Occupancy:</span>
@@ -102,7 +85,7 @@
                             </div>
                             <div class="select-this">
                                 <div class="select-itms">
-                                    <select name="RoomType" id="select3">
+                                    <select name="RoomType" id="select1" class="form-select">
                                         <option value="">Any</option>
                                         <option value="Standard" selected="@(Context.Request.Query["RoomType"] == "Standard")">Standard</option>
                                         <option value="Deluxe" selected="@(Context.Request.Query["RoomType"] == "Deluxe")">Deluxe</option>
@@ -188,7 +171,11 @@
                                             </button>
 
                                             <!-- ✅ Book Now Button -->
-                                            <a asp-action="Reservation" asp-route-id="@room.RoomId" class="btn btn-primary">
+                                            <a asp-action="Reservation"
+                                               asp-route-id="@room.RoomId"
+                                               asp-route-checkin="@(ViewData["CheckInDate"] != null ? Convert.ToDateTime(ViewData["CheckInDate"]).ToString("yyyy-MM-dd") : "")"
+                                               asp-route-checkout="@(ViewData["CheckOutDate"] != null ? Convert.ToDateTime(ViewData["CheckOutDate"]).ToString("yyyy-MM-dd") : "")"
+                                               class="btn btn-primary">
                                                 <i class="fas fa-calendar-check"></i> Book Now
                                             </a>
                                         </div>
@@ -244,6 +231,7 @@
 
 
 @section Scripts{
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const urlParams = new URLSearchParams(window.location.search);
@@ -272,57 +260,73 @@
             modal.show();
         }
     </script>
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+               const today = new Date();
+
+               // Initialize Check-In date picker with flatpickr for elements with class .checkin
+               const checkInPicker = flatpickr(".checkin", {
+                   dateFormat: "Y-m-d",
+                   minDate: today,  // Disable past dates
+                   onChange: function (selectedDates, dateStr) {
+                       // When Check-In is selected, enable Check-Out and set its minDate
+                       let minCheckoutDate = new Date(selectedDates[0]);
+                       minCheckoutDate.setDate(minCheckoutDate.getDate() + 1);
+
+                       // Initialize Check-Out date picker only if not already initialized
+                       flatpickr(".checkout", {
+                           dateFormat: "Y-m-d",
+                           minDate: minCheckoutDate,  // Ensure Check-Out is after Check-In
+                           disableMobile: true,  // Ensure mobile date picker doesn't pop up automatically
+                       });
+
+                       // Enable the Check-Out field after Check-In is selected
+                       document.querySelector(".checkout").disabled = false;
+                   }
+               });
+
+               // Initialize Check-Out date picker with default settings (disabled until Check-In is selected)
+               flatpickr(".checkout", {
+                   dateFormat: "Y-m-d",
+                   minDate: today,  // Disable past dates
+                   disableMobile: true,  // Prevent mobile date picker
+                   clickOpens: false,  // Prevent automatic opening
+               });
+           });
+
         function validateDates() {
-            const checkIn = new Date(document.getElementById("datepicker1").value);
-            const checkOut = new Date(document.getElementById("datepicker2").value);
+                    const checkIn = new Date(document.querySelector(".checkin").value);
+                    const checkOut = new Date(document.querySelector(".checkout").value);
 
-            if (isNaN(checkIn.getTime()) || isNaN(checkOut.getTime())) {
-                showToast("error", "Invalid Date", "Please select valid check-in and check-out dates.");
-                return false; // Prevent form submission
-            }
+                    // Ensure Check-Out date is selected (Check-In must be before Check-Out)
+                    if (checkIn >= checkOut) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Invalid Dates',
+                            text: 'Check-out date must be later than Check-in date.',
+                            confirmButtonText: 'OK',
+                            background: '#f8d7da', // Red background for error
+                            color: '#721c24' // Dark red text color
+                        });
+                        return false;  // Prevent form submission
+                    }
 
-            if (checkIn >= checkOut) {
-                showToast("warning", "Invalid Dates", "Check-out date must be after check-in date.");
-                return false; // Prevent form submission
-            }
+                    // Ensure Check-Out date is not empty
+                    if (isNaN(checkOut.getTime())) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Invalid Dates',
+                            text: 'Please select a valid Check-out date.',
+                            confirmButtonText: 'OK',
+                            background: '#f8d7da',
+                            color: '#721c24'
+                        });
+                        return false;  // Prevent form submission
+                    }
 
-            return true; // Allow form submission
-        }
-
-        function showToast(type, title, message) {
-            Swal.fire({
-                icon: type,
-                title: title,
-                text: message,
-                position: "top", // ✅ Shows at the bottom-left (or use "bottom" for center)
-                toast: true, // ✅ Keeps it compact
-                showConfirmButton: false,
-                timer: 3000, // Auto close in 3 seconds
-                width: "500px", // ✅ Wider but not too tall
-                padding: "12px",
-                background: getBackgroundColor(type), // ✅ Custom background colors
-                color: "#000", // ✅ Keep text readable
-                customClass: {
-                    popup: "swal-custom-popup",
-                    title: "swal-custom-title",
-                    content: "swal-custom-text"
+                    return true;  // Allow form submission
                 }
-            });
-
-            // ✅ Ensure it stays on top
-            setTimeout(() => {
-                document.querySelector(".swal2-container").style.zIndex = "9999";
-            }, 100); // Small delay to ensure it applies after rendering
-        }
-
-        function getBackgroundColor(type) {
-            switch (type) {
-                case "success": return "#d4edda"; // ✅ Light green
-                case "warning": return "#fff3cd"; // ✅ Light yellow
-                case "error": return "#f8d7da"; // ✅ Light red
-                default: return "#ffffff"; // ✅ Default white
-            }
-        }
     </script>
 }

@@ -4,68 +4,75 @@
     ViewData["Title"] = "Manage Reservations";
 }
 
-<h2>Manage Reservations</h2>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Manage Reservations</h2>
+        <a class="btn btn-primary" asp-action="SearchRoom">Add New Reservation</a>
+    </div>
 
-<!-- Add Reservation Button (Moved to Top) -->
-<div class="d-flex justify-content-between mb-3">
-    <a class="btn btn-primary" asp-action="SearchRoom">Add New Reservation</a>
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white fw-bold">Reservation List</div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search by Guest Name / Booking Ref" />
+                </div>
+                <div class="col-md-3">
+                    <select id="statusFilter" class="form-select">
+                        <option value="">All Statuses</option>
+                        <option value="Pending">Pending</option>
+                        <option value="CheckedIn">Checked In</option>
+                        <option value="CheckedOut">Checked Out</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                </div>
+            </div>
 
-    <!-- Search & Filter Section (Client-Side) -->
-    <div class="d-flex">
-        <input type="text" id="searchInput" class="form-control me-2" placeholder="Search by Guest Name / Booking Ref" />
-        <select id="statusFilter" class="form-select me-2">
-            <option value="">All Statuses</option>
-            <option value="Pending">Pending</option>
-            <option value="CheckedIn">Checked In</option>
-            <option value="CheckedOut">Checked Out</option>
-            <option value="Cancelled">Cancelled</option>
-        </select>
+            <table class="table table-hover align-middle" id="reservationsTable">
+                <thead class="table-light">
+                    <tr>
+                        <th>Booking Ref</th>
+                        <th>Guest Name</th>
+                        <th>Room</th>
+                        <th>Check-In</th>
+                        <th>Check-Out</th>
+                        <th>Status</th>
+                        <th>Payment</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var reservation in Model)
+                    {
+                        <tr>
+                            <td><span class="fw-semibold">@reservation.BookingReference</span></td>
+                            <td>@reservation.GuestName</td>
+                            <td>@(reservation.Room != null ? reservation.Room.RoomNumber : "N/A")</td>
+                            <td>@reservation.CheckInDate.ToString("MMM dd, yyyy")</td>
+                            <td>@reservation.CheckOutDate.ToString("MMM dd, yyyy")</td>
+                            <td>
+                                <span class="badge bg-@(reservation.Status == HotelReservation.Models.ReservationStatus.CheckedIn ? "success" : "warning")">
+                                    @reservation.Status
+                                </span>
+                            </td>
+                            <td>
+                                @Html.Raw(reservation.IsPaid ? "<span class='badge bg-success'>Paid</span>" : "<span class='badge bg-danger'>Unpaid</span>")
+                            </td>
+                            <td>
+                                <a class="btn btn-sm btn-info" asp-action="Details" asp-route-id="@reservation.ReservationId">View</a>
+                                <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@reservation.ReservationId">Edit</a>
+                                <form method="post" asp-action="Delete" asp-route-id="@reservation.ReservationId" style="display:inline;">
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirmDelete(this);">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
-<table class="table" id="reservationsTable">
-    <thead>
-        <tr>
-            <th>Booking Ref</th>
-            <th>Guest Name</th>
-            <th>Room</th>
-            <th>Check-In</th>
-            <th>Check-Out</th>
-            <th>Status</th>
-            <th>Payment</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var reservation in Model)
-        {
-            <tr>
-                <td>@reservation.BookingReference</td>
-                <td>@reservation.GuestName</td>
-                <td>@(reservation.Room != null ? reservation.Room.RoomNumber : "N/A")</td>
-                <td>@reservation.CheckInDate.ToShortDateString()</td>
-                <td>@reservation.CheckOutDate.ToShortDateString()</td>
-                <td>
-                    <span class="badge bg-@(reservation.Status == HotelReservation.Models.ReservationStatus.CheckedIn ? "success" : "warning")">
-                        @reservation.Status
-                    </span>
-                </td>
-                <td>
-                    @Html.Raw(reservation.IsPaid ? "<span class='badge bg-success'>Paid</span>" : "<span class='badge bg-danger'>Unpaid</span>")
-                </td>
-                <td>
-                    <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@reservation.ReservationId">View</a>
-                    <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@reservation.ReservationId">Edit</a>
-                    <form method="post" asp-action="Delete" asp-route-id="@reservation.ReservationId" style="display:inline;">
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete</button>
-                    </form>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-<!-- Client-Side JavaScript Filtering -->
 @section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -78,7 +85,6 @@
                 const statusValue = statusFilter.value.toLowerCase();
 
                 tableRows.forEach(row => {
-                    // Assuming columns: 0 - Booking Ref, 1 - Guest Name, 5 - Status
                     const bookingRef = row.cells[0].textContent.toLowerCase();
                     const guestName = row.cells[1].textContent.toLowerCase();
                     const rowStatus = row.cells[5].textContent.toLowerCase();
@@ -93,5 +99,22 @@
             searchInput.addEventListener("input", filterTable);
             statusFilter.addEventListener("change", filterTable);
         });
+
+        function confirmDelete(form) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "This action cannot be undone!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#6c757d",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+            return false;
+        }
     </script>
 }

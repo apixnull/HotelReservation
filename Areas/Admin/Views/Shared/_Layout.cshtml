@@ -24,8 +24,8 @@
 
     <div class="wrapper">
         <nav id="sidebar" class="active">
-            <div class="sidebar-header">
-                <img src="~/adminAssets/img/bootstraper-logo.png" alt="bootraper logo" class="app-logo">
+            <div class="sidebar-header text-center">
+                <h3 class="text-black pt-1">Admin Panel</h3>
             </div>
             <ul class="list-unstyled components text-secondary">
                 <li>
@@ -39,34 +39,6 @@
                 </li>
                 <li>
                     <a asp-area="Admin" asp-controller="ManageReservations" asp-action="Index"><i class="fas fa-chart-bar"></i>Reservations</a>
-                </li>
-                <li>
-                    <a href="#authmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle no-caret-down"><i class="fas fa-user-shield"></i> Authentication</a>
-                    <ul class="collapse list-unstyled" id="authmenu">
-                        <li>
-                            <a href="login.html"><i class="fas fa-lock"></i> Login</a>
-                        </li>
-                        <li>
-                            <a href="signup.html"><i class="fas fa-user-plus"></i> Signup</a>
-                        </li>
-                        <li>
-                            <a href="forgot-password.html"><i class="fas fa-user-lock"></i> Forgot password</a>
-                        </li>
-                    </ul>
-                </li>
-                <li>
-                    <a href="#pagesmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle no-caret-down"><i class="fas fa-copy"></i> Pages</a>
-                    <ul class="collapse list-unstyled" id="pagesmenu">
-                        <li>
-                            <a href="blank.html"><i class="fas fa-file"></i> Blank page</a>
-                        </li>
-                        <li>
-                            <a href="404.html"><i class="fas fa-info-circle"></i> 404 Error page</a>
-                        </li>
-                        <li>
-                            <a href="500.html"><i class="fas fa-info-circle"></i> 500 Error page</a>
-                        </li>
-                    </ul>
                 </li>
                 <li>
                     <a href="settings.html"><i class="fas fa-cog"></i>Settings</a>
@@ -83,19 +55,10 @@
                     <ul class="nav navbar-nav ms-auto">
                         <li class="nav-item dropdown">
                             <div class="nav-dropdown">
-                                <a href="#" id="nav1" class="nav-item nav-link dropdown-toggle text-secondary" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-link"></i> <span>Quick Links</span> <i style="font-size: .8em;" class="fas fa-caret-down"></i>
+                                <a href="#" class="nav-item nav-link text-secondary">
+                                    <i class="fas fa-envelope"></i> <span>Inbox</span> <i style="font-size: .8em;"></i>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end nav-link-menu" aria-labelledby="nav1">
-                                    <ul class="nav-list">
-                                        <li><a href="" class="dropdown-item"><i class="fas fa-list"></i> Access Logs</a></li>
-                                        <div class="dropdown-divider"></div>
-                                        <li><a href="" class="dropdown-item"><i class="fas fa-database"></i> Back ups</a></li>
-                                        <div class="dropdown-divider"></div>
-                                        <li><a href="" class="dropdown-item"><i class="fas fa-cloud-download-alt"></i> Updates</a></li>
-                                        <div class="dropdown-divider"></div>
-                                        <li><a href="" class="dropdown-item"><i class="fas fa-user-shield"></i> Roles</a></li>
-                                    </ul>
                                 </div>
                             </div>
                         </li>
@@ -113,8 +76,6 @@
                                     <ul class="nav-list">
                                         <li><a href="" class="dropdown-item"><i class="fas fa-address-card"></i> Profile</a></li>
                                         <li><a href="" class="dropdown-item"><i class="fas fa-envelope"></i> Messages</a></li>
-                                        <li><a href="" class="dropdown-item"><i class="fas fa-cog"></i> Settings</a></li>
-                                        <div class="dropdown-divider"></div>
                                         <li><a asp-area="" asp-controller="Auth" asp-action="Logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
                                     </ul>
                                 </div>
@@ -187,6 +148,12 @@
             var errorMessage = "@TempData["Error"]";
             if (errorMessage) {
                 showAlert("error", "Oops!", errorMessage);
+            }
+
+            // Warning Alert
+            var warningMessage = "@TempData["Warning"]";
+            if (warningMessage) {
+                showAlert("warning", "Attention!", warningMessage);
             }
 
             // Warning Alert

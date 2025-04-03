@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System.Security.Claims;
 using HotelReservation.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace HotelReservation.Controllers
 {
@@ -25,9 +26,15 @@ namespace HotelReservation.Controllers
         /***********************************************************************************************************************/
         /***********************************************************************************************************************/
         // Search
-        public async Task<IActionResult> Search(int MaxOccupancy, string? RoomType)
+        public async Task<IActionResult> Search(int MaxOccupancy, string? RoomType, DateTime? CheckInDate, DateTime? CheckOutDate)
         {
+            
             var availableRooms = await _bookingService.SearchAvailableRooms(MaxOccupancy, RoomType);
+
+            // Format dates into Y-m-d format to match flatpickr
+            ViewData["CheckInDate"] = CheckInDate;
+            ViewData["CheckOutDate"] = CheckOutDate;
+
             return View("Search", availableRooms);
         }
 
@@ -37,14 +44,17 @@ namespace HotelReservation.Controllers
         /***********************************************************************************************************************/
         // Reservation
         [HttpGet]
-        public async Task<IActionResult> Reservation(int id)
+        public async Task<IActionResult> Reservation(int id, DateTime checkin, DateTime checkout)
         {
+
+
             var room = await _bookingService.GetRoomDetails(id);
             if (room == null)
             {
                 return NotFound();
             }
 
+         
             // Create the view model and populate with room details
             var reservationViewModel = new ReservationViewModel
             {
@@ -55,7 +65,9 @@ namespace HotelReservation.Controllers
                 RoomType = room.RoomType.ToString(),
                 RoomDescription = room.Description,
                 MaxOccupancy = room.MaxOccupancy,
-                BookingReference = Guid.NewGuid().ToString("N").Substring(0, 10).ToUpper()
+                BookingReference = Guid.NewGuid().ToString("N").Substring(0, 10).ToUpper(),
+                CheckInDate = checkin,
+                CheckOutDate = checkout
             };
 
             // If the user is authenticated, prepopulate guest details
@@ -80,6 +92,11 @@ namespace HotelReservation.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Reservation(ReservationViewModel model)
         {
+            // Debugging: Log the received form values
+            Console.WriteLine($"🔍 Debug - Received CheckInDate: {model.CheckInDate}");
+            Console.WriteLine($"🔍 Debug - Received CheckOutDate: {model.CheckOutDate}");
+
+
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -91,6 +108,20 @@ namespace HotelReservation.Controllers
                 model.UserId = int.Parse(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
             }
 
+
+            // Fetch the room first to update its status
+            var room = await _context.Rooms.FindAsync(model.RoomId);
+            if (room == null || room.Status != RoomStatus.Available)
+            {
+                TempData["Error"] = "Sorry, the room is no longer available.";
+                return RedirectToAction("Index", "Home"); // Or return to the reservation form
+            }
+
+            // Update the room status to "Pending"
+            room.Status = RoomStatus.Pending;
+            room.LastStatusUpdate = DateTime.UtcNow;
+
+
             // Create a pending reservation record
             var reservation = new Reservation
             {
@@ -101,7 +132,7 @@ namespace HotelReservation.Controllers
                 GuestEmail = model.GuestEmail,
                 GuestPhone = model.GuestPhone,
                 CheckInDate = model.CheckInDate,
-                CheckOutDate = model.CheckOutDate,
+                CheckOutDate = model.CheckOutDate,  
                 Adults = model.Adults,
                 Children = model.Children,
                 TotalPrice = model.TotalPrice,
@@ -113,6 +144,9 @@ namespace HotelReservation.Controllers
             };
 
             _context.Reservations.Add(reservation);
+         
+         
+            // Save both the reservation and room update
             await _context.SaveChangesAsync();
 
             // Optionally store the reservation ID in TempData to retrieve later in the checkout process

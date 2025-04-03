@@ -40,10 +40,7 @@ namespace HotelReservation.Models
         [DataType(DataType.Password)]
         public string Password { get; set; } = string.Empty;
 
-        // New fields for tracking user activity:
-        public DateTime? LastLoginDate { get; set; }
-        public DateTime? UpdatedAt { get; set; }
-
+      
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

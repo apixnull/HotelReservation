@@ -13,6 +13,7 @@ namespace HotelReservation.Models
     public enum RoomStatus
     {
         Available,
+        Pending,
         Booked,
         Occupied,
         Maintenance
@@ -45,10 +46,9 @@ namespace HotelReservation.Models
 
         public DateTime LastStatusUpdate { get; set; } = DateTime.UtcNow;
 
-        [MaxLength(255)]
         public string? Image1 { get; set; }
 
-        [MaxLength(255)]
+
         public string? Image2 { get; set; }
 
         public DateTime? LastCleaned { get; set; } // ✅ NEW: Track last cleaned date

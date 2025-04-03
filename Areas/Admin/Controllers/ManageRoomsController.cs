@@ -26,7 +26,7 @@ namespace HotelReservation.Areas.Admin.Controllers
             return View(rooms); //
         }
 
-
+         
         /***********************************************************************************************************************/
         /***********************************************************************************************************************/
         /***********************************************************************************************************************/
@@ -54,7 +54,7 @@ namespace HotelReservation.Areas.Admin.Controllers
                 TempData["Error"] = "Room number already exists.";
                 return View(model);
             }
-
+             
             TempData["Success"] = "Room created successfully.";
             return RedirectToAction(nameof(Index));
         }

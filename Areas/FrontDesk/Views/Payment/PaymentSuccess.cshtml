@@ -1,0 +1,23 @@
+﻿@model HotelReservation.Models.Payment
+
+@{
+    Layout = "_Layout"; // or your preferred layout
+    var reservationSummaryUrl = Url.Action("MyReservationSummary", "Booking", new { id = Model.ReservationId });
+    var homeUrl = Url.Action("Index", "Home");
+}
+
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h3 class="card-title">Payment Successful</h3>
+        </div>
+        <div class="card-body">
+            <p class="lead">Thank you for your payment!</p>
+            <p>Your reservation (Reference: @Model.Reservation.BookingReference) is now confirmed.</p>
+            <p>A confirmation email has been sent to your email address.</p>
+        </div>
+        <div class="card-footer text-center">
+            <a asp-area="FrontDesk" asp-controller="Reservations" asp-action="Index" class="btn btn-secondary">Return to Home</a>
+        </div>
+    </div>
+</div>

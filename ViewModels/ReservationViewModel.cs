@@ -26,11 +26,9 @@ namespace HotelReservation.ViewModels
         public string GuestPhone { get; set; } = string.Empty;
 
         [Required]
-        [DataType(DataType.Date)]
         public DateTime CheckInDate { get; set; }
 
         [Required]
-        [DataType(DataType.Date)]
         public DateTime CheckOutDate { get; set; }
 
         [Required]

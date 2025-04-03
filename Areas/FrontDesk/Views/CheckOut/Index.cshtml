@@ -2,45 +2,89 @@
 
 @{
     ViewData["Title"] = "Check-Out Guests";
+    var today = DateTime.UtcNow.Date;
+    var checkedOutToday = Model.Where(r => r.ActualCheckOut?.Date == today).ToList();
 }
 
-<h2>Check-Out Guests</h2>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Check-Out Guests</h2>
+    </div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Booking Ref</th>
-            <th>Guest Name</th>
-            <th>Room</th>
-            <th>Check-In Date</th>
-            <th>Checked-In Time</th>
-            <th>Checked-Out Time</th> <!-- ✅ NEW -->
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var reservation in Model)
-        {
-            <tr>
-                <td>@reservation.BookingReference</td>
-                <td>@reservation.GuestName</td>
-                <td>@(reservation.Room != null ? reservation.Room.RoomNumber : "N/A")</td>
-                <td>@reservation.CheckInDate.ToShortDateString()</td>
-                <td>@(reservation.ActualCheckIn?.ToString("hh:mm tt") ?? "N/A")</td>
-                <td>@(reservation.ActualCheckOut?.ToString("hh:mm tt") ?? "—")</td> <!-- ✅ NEW -->
-                <td>
-                    @if (reservation.Status == HotelReservation.Models.ReservationStatus.CheckedOut)
+    <div class="card shadow-sm">
+        <div class="card-header bg-danger text-white fw-bold">Checked-Out Guests</div>
+        <div class="card-body">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Booking Ref</th>
+                        <th>Guest Name</th>
+                        <th>Room</th>
+                        <th>Check-In Date</th>
+                        <th>Actual Checked-In Time</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var reservation in Model.Where(r => r.Status == HotelReservation.Models.ReservationStatus.CheckedIn))
                     {
-                        <a class="btn btn-info" asp-action="Receipt" asp-route-id="@reservation.ReservationId">View Receipt</a> <!-- ✅ NEW -->
+                        <tr>
+                            <td><span class="fw-semibold">@reservation.BookingReference</span></td>
+                            <td>@reservation.GuestName</td>
+                            <td>@(reservation.Room != null ? reservation.Room.RoomNumber : "N/A")</td>
+                            <td>@reservation.CheckInDate.ToShortDateString()</td>
+                            <td>@(reservation.ActualCheckIn?.ToString("hh:mm tt") ?? "N/A")</td>
+                            <td>
+                                <form method="post" asp-action="CheckOutGuest" asp-route-id="@reservation.ReservationId">
+                                    <button type="submit" class="btn btn-sm btn-danger">Check Out</button>
+                                </form>
+                            </td>
+                        </tr>
                     }
-                    else
-                    {
-                        <form method="post" asp-action="CheckOutGuest" asp-route-id="@reservation.ReservationId">
-                            <button type="submit" class="btn btn-danger">Check Out</button>
-                        </form>
-                    }
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-4">
+        <div class="card-header bg-primary text-white fw-bold">Guests Checked Out Today</div>
+        <div class="card-body">
+            @if (checkedOutToday.Any())
+            {
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Booking Ref</th>
+                            <th>Guest Name</th>
+                            <th>Room</th>
+                            <th>Checked-Out Time</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var reservation in checkedOutToday)
+                        {
+                            <tr>
+                                <td><span class="fw-semibold">@reservation.BookingReference</span></td>
+                                <td>@reservation.GuestName</td>
+                                <td>@(reservation.Room != null ? reservation.Room.RoomNumber : "N/A")</td>
+                                <td>@reservation.ActualCheckOut?.ToString("hh:mm tt")</td>
+                                <td>
+                                    @if (reservation.Status == HotelReservation.Models.ReservationStatus.CheckedOut)
+                                    {
+                                        <a class="btn btn-sm btn-info" asp-action="Receipt" asp-route-id="@reservation.ReservationId">View Receipt</a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="alert alert-info">No guests have checked out today.</div>
+            }
+        </div>
+    </div>
+</div>

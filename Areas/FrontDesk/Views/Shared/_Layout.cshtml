@@ -3,73 +3,102 @@
 @{
     var frontDeskEmail = HttpContextAccessor.HttpContext?.User.Identity?.Name ?? "FrontDesk";
 }
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>@ViewData["Title"] - Front Desk</title>
 
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link href="~/adminAssets/vendor/fontawesome/css/fontawesome.min.css" rel="stylesheet" asp-append-version="true">
+    <link href="~/adminAssets/vendor/fontawesome/css/solid.min.css" rel="stylesheet" asp-append-version="true">
+    <link href="~/adminAssets/vendor/fontawesome/css/brands.min.css" rel="stylesheet" asp-append-version="true">
+    <link href="~/adminAssets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" asp-append-version="true">
+    <link href="~/adminAssets/css/master.css" rel="stylesheet" asp-append-version="true">
+    <link href="~/adminAssets/vendor/flagiconcss/css/flag-icon.min.css" rel="stylesheet" asp-append-version="true">
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 
-    <div class="d-flex" id="wrapper">
-        <!-- Sidebar -->
-        <nav class="bg-dark text-white vh-100 d-flex flex-column p-3 position-fixed top-0 start-0 h-100 overflow-auto" id="sidebar">
-            <h4 class="text-center">Front Desk</h4>
-            <hr>
-            <ul class="nav flex-column">
-                <li class="nav-item"><a class="nav-link text-white" asp-area="FrontDesk" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
-                <li class="nav-item"><a class="nav-link text-white" asp-area="FrontDesk" asp-controller="CheckIn" asp-action="Index">Check-in Guests</a></li>
-                <li class="nav-item"><a class="nav-link text-white" asp-area="FrontDesk" asp-controller="CheckOut" asp-action="Index">Check-out Guests</a></li>
-                <li class="nav-item"><a class="nav-link text-white" asp-area="FrontDesk" asp-controller="Reservations" asp-action="Index">Manage Reservations</a></li>
-                <li class="nav-item"><a class="nav-link text-white" asp-area="FrontDesk" asp-controller="GuestSearch" asp-action="Index">Guest Search</a></li>
-                <li class="nav-item"><a class="nav-link text-white" asp-area="FrontDesk" asp-controller="Housekeeping" asp-action="Index">Housekeeping Requests</a></li>
-                <li class="nav-item"><a class="nav-link text-white" asp-area="FrontDesk" asp-controller="Billing" asp-action="Index">Billing & Payments</a></li>
-                <li class="nav-item"><a class="nav-link text-white" asp-area="FrontDesk" asp-controller="Reports" asp-action="Index">Reports</a></li>
+    <div class="wrapper">
+       
+        <!-- side bar-->
+        <nav id="sidebar" class="active">
+            <div class="bg-dark text-white sidebar-header text-center">
+                <h3 class="pt-1">FrontDesk</h3>
+            </div>
+            <ul class="list-unstyled components text-secondary">
+                <li><a asp-area="FrontDesk" asp-controller="Dashboard" asp-action="Index"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a asp-area="FrontDesk" asp-controller="CheckIn" asp-action="Index"><i class="fas fa-home"></i> Check-in Guests</a></li>
+                <li><a asp-area="FrontDesk" asp-controller="CheckOut" asp-action="Index"><i class="fas fa-home"></i> Check-out Guests</a></li>
+                <li><a asp-area="FrontDesk" asp-controller="Reservations" asp-action="Index"><i class="fas fa-home"></i> Manage Reservations</a></li>
+                <li><a asp-area="FrontDesk" asp-controller="GuestSearch" asp-action="Index"><i class="fas fa-home"></i> Guest Search</a></li>
+                <li><a asp-area="FrontDesk" asp-controller="HouseKeeping" asp-action="Index"><i class="fas fa-home"></i> Housekeeping Requests</a></li>
+                <li><a asp-area="FrontDesk" asp-controller="Billing" asp-action="Index"><i class="fas fa-home"></i> Billing & Payments</a></li>
+                <li><a asp-area="FrontDesk" asp-controller="Reports" asp-action="Index"><i class="fas fa-home"></i> Reports</a></li>
             </ul>
         </nav>
+        <div id="body" class="active">
+            <!-- navbar navigation component -->
+            <nav class="navbar navbar-expand-lg navbar-white bg-dark">
+                <button type="button" id="sidebarCollapse" class="btn btn-light">
+                    <i class="fas fa-bars"></i><span></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="nav navbar-nav ms-auto">
+                        <li class="nav-item dropdown">
+                            <div class="nav-dropdown">
+                                <a href="#" class="nav-item nav-link text-secondary">
+                                    <i class="fas fa-envelope text-white"></i> <span class="text-white">Inbox</span> <i style="font-size: .8em;"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end nav-link-menu" aria-labelledby="nav1">
+                                </div>
+                            </div>
+                        </li>
+                        @{
+                            var email = User.Identity?.Name ?? "Guest";
 
-        <!-- Page Content -->
-        <div class="flex-grow-1" id="content" style="margin-left: 250px;">
-            <!-- Top Bar -->
-            <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-                <button class="btn btn-outline-primary me-3 d-lg-none" id="toggleSidebar">☰</button>
-                <div class="ms-auto d-flex align-items-center">
-                    <span class="me-3"><i class="fas fa-user"></i> @frontDeskEmail</span>
-                    <a href="#" class="me-3"><i class="fas fa-envelope"></i> Inbox</a>
-                    <a asp-area="" asp-controller="Auth" asp-action="Logout" class="text-danger"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                            // Retrieve profile picture from claims, fallback to default
+                        }
+                        <li class="nav-item dropdown">
+                            <div class="nav-dropdown">
+                                <a href="#" id="nav2" class="nav-item nav-link dropdown-toggle text-secondary" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user text-white"></i> <span class="text-white">@email</span> <i style="font-size: .8em;" class="fas fa-caret-down"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end nav-link-menu">
+                                    <ul class="nav-list">
+                                        <li><a href="" class="dropdown-item"><i class="fas fa-address-card"></i> Profile</a></li>
+                                        <li><a href="" class="dropdown-item"><i class="fas fa-envelope"></i> Messages</a></li>
+                                        <li><a asp-area="" asp-controller="Auth" asp-action="Logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
             </nav>
-
-            <div class="container-fluid p-3">
-                @RenderBody()
-            </div>
+            <!-- end of navbar navigation -->
+            <main>
+                <div class="content">
+                    @RenderBody()
+                </div>
+            </main>
         </div>
     </div>
 
-    <script src="~/lib/jquery/dist/jquery.min.js" asp-append-version="true"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/adminAssets/vendor/jquery/jquery.min.js" asp-append-version="true"></script>
+    <script src="~/adminAssets/vendor/bootstrap/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
+    <script src="~/adminAssets/vendor/chartsjs/Chart.min.js" asp-append-version="true"></script>
+    <script src="~/adminAssets/js/dashboard-charts.js" asp-append-version="true"></script>
+    <script src="~/adminAssets/js/script.js" asp-append-version="true"></script>
 
-    <script>
-        document.getElementById("toggleSidebar").addEventListener("click", function () {
-            var sidebar = document.getElementById("sidebar");
-            var content = document.getElementById("content");
-
-            if (sidebar.style.marginLeft === "-250px") {
-                sidebar.style.marginLeft = "0";
-                content.style.marginLeft = "250px";
-            } else {
-                sidebar.style.marginLeft = "-250px";
-                content.style.marginLeft = "0";
-            }
-        });
-    </script>
-
+    <!-- ✅ Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    @* <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script> *@
+    @* <script src="~/js/admin.js" asp-append-version="true"></script> *@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -127,7 +156,6 @@
                 showAlert("warning", "Warning!", warningMessage);
             }
         });
-
 
     </script>
     @await RenderSectionAsync("Scripts", required: false)

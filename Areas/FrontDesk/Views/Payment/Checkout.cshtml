@@ -1,26 +1,86 @@
-﻿@model HotelReservation.Areas.FrontDesk.ViewModels.PaymentViewModel
+﻿@model HotelReservation.ViewModels.CheckoutViewModel
 
 @{
-    ViewData["Title"] = "Payment Checkout";
+    ViewData["Title"] = "Checkout";
 }
 
-<h2>Payment Checkout</h2>
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow border-0">
+                <div class="card-body p-4">
+                    <h2 class="card-title text-center mb-4">Checkout</h2>
 
-<p>Booking Reference: <strong>@Model.BookingReference</strong></p>
-<p>Guest Name: <strong>@Model.GuestName</strong></p>
-<p>Total Amount: <strong>₱@Model.TotalAmount</strong></p>
-<p>Payment Method: <strong>@Model.PaymentMethod</strong></p>
+                    <!-- Payment Method Selection -->
+                    <div class="text-center mb-3">
+                        <button type="button" class="btn btn-outline-primary me-2" id="btnCash">Cash</button>
+                        <button type="button" class="btn btn-outline-success" id="btnGCash">GCash</button>
+                    </div>
 
-<form asp-action="ProcessPayment" method="post">
-    <input type="hidden" asp-for="ReservationId" />
-    <input type="hidden" asp-for="PaymentMethod" />
+                    <!-- Cash Payment Form -->
+                    <form asp-area="FrontDesk" asp-controller="Payment" asp-action="Checkout" method="post" id="cashForm" class="d-none">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="ReservationId" />
+                        <input type="hidden" name="PaymentMethod" value="Cash" />
 
-    @if (Model.PaymentMethod == "GCash")
-    {
-        <label>GCash Number:</label>
-        <input type="text" asp-for="GCashNumber" class="form-control" required />
-        <span asp-validation-for="GCashNumber" class="text-danger"></span>
-    }
+                        <div class="mb-3">
+                            <label asp-for="TotalAmount" class="form-label">Total Amount</label>
+                            <input asp-for="TotalAmount" class="form-control" readonly />
+                        </div>
+                        <div class="mb-3">
+                            <label for="cashReceived" class="form-label">Cash Received</label>
+                            <input type="number" id="cashReceived" name="CashReceived" class="form-control" placeholder="Enter amount received" required />
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Confirm Cash Payment</button>
+                    </form>
 
-    <button type="submit" class="btn btn-success">Confirm Payment</button>
-</form>
+                    <!-- GCash Payment Form -->
+                    <form asp-area="FrontDesk" asp-controller="Payment" asp-action="Checkout" method="post" id="gcashForm" class="d-none">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="ReservationId" />
+                        <input type="hidden" name="PaymentMethod" value="GCash" />
+
+                        <div class="mb-3">
+                            <label asp-for="TotalAmount" class="form-label">Total Amount</label>
+                            <input asp-for="TotalAmount" class="form-control" readonly />
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="GCashNumber" class="form-label">GCash Number</label>
+                            <input asp-for="GCashNumber" class="form-control" placeholder="Enter your GCash number" required />
+                            <span asp-validation-for="GCashNumber" class="text-danger"></span>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Pay with GCash</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById("btnCash").addEventListener("click", function () {
+            document.getElementById("cashForm").classList.remove("d-none");
+            document.getElementById("gcashForm").classList.add("d-none");
+
+            // Reset GCash form inputs when switching to Cash
+            document.getElementById("gcashForm").reset();
+        });
+
+        document.getElementById("btnGCash").addEventListener("click", function () {
+            document.getElementById("gcashForm").classList.remove("d-none");
+            document.getElementById("cashForm").classList.add("d-none");
+
+            // Reset Cash form inputs when switching to GCash
+            document.getElementById("cashForm").reset();
+        });
+
+        // Prevent multiple submissions
+        document.querySelectorAll("form").forEach(form => {
+            form.addEventListener("submit", function () {
+                this.querySelector("button[type='submit']").disabled = true;
+            });
+        });
+    </script>
+}

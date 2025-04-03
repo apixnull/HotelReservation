@@ -2,80 +2,98 @@
 
 @{
     ViewData["Title"] = "Check-In Guests";
+
+    // Filtered lists (inside the view)
     var checkedInGuests = Model.Where(r => r.Status == HotelReservation.Models.ReservationStatus.CheckedIn).ToList();
-    var pendingGuests = Model.Where(r => r.Status == HotelReservation.Models.ReservationStatus.Pending).ToList();
+    var confirmedGuests = Model.Where(r => r.Status == HotelReservation.Models.ReservationStatus.Confirmed).ToList();
 }
 
-<h2>Check-In Guests</h2>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Check-In Guests</h2>
+    </div>
 
-@if (pendingGuests.Any())
-{
-    <h3>Pending Check-Ins</h3>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Booking Ref</th>
-                <th>Guest Name</th>
-                <th>Room</th>
-                <th>Check-In Date</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var reservation in pendingGuests)
-            {
-                <tr>
-                    <td>@reservation.BookingReference</td>
-                    <td>@reservation.GuestName</td>
-                    <td>@(reservation.Room != null ? reservation.Room.RoomNumber : "N/A")</td>
-                    <td>@reservation.CheckInDate.ToShortDateString()</td>
-                    <td>
-                        <span class="badge bg-warning">Pending</span>
-                    </td>
-                    <td>
-                        <form method="post" asp-action="CheckInGuest" asp-route-id="@reservation.ReservationId">
-                            <button type="submit" class="btn btn-success">Check In</button>
-                        </form>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <p>No pending check-ins for today.</p>
-}
+    @if (confirmedGuests.Any())
+    {
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-warning text-white fw-bold">Pending Check-Ins</div>
+            <div class="card-body">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Booking Ref</th>
+                            <th>Guest Name</th>
+                            <th>Email</th>
+                            <th>Room</th>
+                            <th>Check-In Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var reservation in confirmedGuests)
+                        {
+                            <tr>
+                                <td><span class="fw-semibold">@reservation.BookingReference</span></td>
+                                <td>@reservation.GuestName</td>
+                                <td>@reservation.GuestEmail</td>
+                                <td>@(reservation.Room?.RoomNumber ?? "N/A")</td>
+                                <td>@reservation.CheckInDate.ToShortDateString()</td>
+                                <td><span class="badge bg-warning text-dark">Confirmed</span></td>
+                                <td>
+                                    <form method="post" asp-action="CheckInGuest" asp-route-id="@reservation.ReservationId">
+                                        <button type="submit" class="btn btn-success btn-sm">Check In</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">No pending check-ins for today.</div>
+    }
 
-@if (checkedInGuests.Any())
-{
-    <h3>Checked-In Guests</h3>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Booking Ref</th>
-                <th>Guest Name</th>
-                <th>Room</th>
-                <th>Check-In Date</th>
-                <th>Checked-In Time</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var reservation in checkedInGuests)
-            {
-                <tr>
-                    <td>@reservation.BookingReference</td>
-                    <td>@reservation.GuestName</td>
-                    <td>@(reservation.Room != null ? reservation.Room.RoomNumber : "N/A")</td>
-                    <td>@reservation.CheckInDate.ToShortDateString()</td>
-                    <td>@(reservation.ActualCheckIn?.ToString("hh:mm tt") ?? "N/A")</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <p>No guests have checked in today.</p>
-}
+    @if (checkedInGuests.Any())
+    {
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white fw-bold">Checked-In Guests</div>
+            <div class="card-body">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Booking Ref</th>
+                            <th>Guest Name</th>
+                            <th>Email</th>
+                            <th>Room</th>
+                            <th>Status</th>
+                            <th>Check-In Date</th>
+                            <th>Checked-In Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var reservation in checkedInGuests)
+                        {
+                            <tr>
+                                <td><span class="fw-semibold">@reservation.BookingReference</span></td>
+                                <td>@reservation.GuestName</td>
+                                <td>@reservation.GuestEmail</td>
+                                <td>@(reservation.Room?.RoomNumber ?? "N/A")</td>
+                                <td><span class="badge bg-success text-dark">@reservation.Status</span></td>
+                                <td>@reservation.CheckInDate.ToShortDateString()</td>
+                                <td>@(reservation.ActualCheckIn?.ToString("hh:mm tt") ?? "N/A")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info mt-3">No guests have checked in today.</div>
+    }
+</div>

@@ -1,6 +1,8 @@
 ﻿using HotelReservation.Areas.FrontDesk.ViewModels;
 using HotelReservation.Data;
+using HotelReservation.Models;
 using HotelReservation.Services;
+using HotelReservation.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace HotelReservation.Areas.FrontDesk.Controllers
 {
     [Area("FrontDesk")]
-    [Authorize(Policy = "FrontDesk,Admin")]
+    [Authorize(Policy = "FrontDeskOnly")]
     public class PaymentController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -20,171 +22,158 @@ namespace HotelReservation.Areas.FrontDesk.Controllers
             _emailService = emailService;
         }
 
+
         /***********************************************************************************************************************/
         /***********************************************************************************************************************/
         /***********************************************************************************************************************/
-        //  Index
+        // GET: /Payment/Checkout
         [HttpGet]
-        public async Task<IActionResult> Index(int reservationId)
+        public async Task<IActionResult> Checkout()
         {
-            var reservation = await _context.Reservations
-                .Include(r => r.Room)
-                .FirstOrDefaultAsync(r => r.ReservationId == reservationId);
+            if (TempData["ReservationId"] == null) 
+            {
+                return RedirectToAction("Search", "Booking");
+            }
 
-            if (reservation == null) return NotFound();
+            int reservationId = Convert.ToInt32(TempData["ReservationId"]);
+            var reservation = await _context.Reservations.FindAsync(reservationId);
+            if (reservation == null)
+            {
+                return NotFound();
+            }
 
-            var viewModel = new PaymentViewModel
+            var checkoutViewModel = new CheckoutViewModel
             {
                 ReservationId = reservation.ReservationId,
-                BookingReference = reservation.BookingReference,
-                GuestName = reservation.GuestName!,
                 TotalAmount = reservation.TotalPrice
             };
 
-            return View(viewModel);
+            TempData.Keep("ReservationId");
+            return View(checkoutViewModel);
         }
 
 
 
-
         /***********************************************************************************************************************/
         /***********************************************************************************************************************/
         /***********************************************************************************************************************/
-        //  Select Payment Method
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult SelectPaymentMethod(PaymentViewModel model)
+        public async Task<IActionResult> Checkout(CheckoutViewModel model)
         {
-            if (string.IsNullOrEmpty(model.PaymentMethod))
+            if (!ModelState.IsValid)
             {
-                TempData["Error"] = "Please select a payment method.";
-                return RedirectToAction("Index", new { reservationId = model.ReservationId });
+                return View(model);
             }
 
-            return RedirectToAction("Checkout", new { reservationId = model.ReservationId, paymentMethod = model.PaymentMethod });
-        }
-
-
-
-
-
-        /***********************************************************************************************************************/
-        /***********************************************************************************************************************/
-        /***********************************************************************************************************************/
-        //  CHeckout
-        [HttpGet]
-        public async Task<IActionResult> Checkout(int reservationId, string paymentMethod)
-        {
-            var reservation = await _context.Reservations.FindAsync(reservationId);
-            if (reservation == null) return NotFound();
-
-            var viewModel = new PaymentViewModel
+            var reservation = await _context.Reservations.FindAsync(model.ReservationId);
+            if (reservation == null)
             {
-                ReservationId = reservation.ReservationId,
-                BookingReference = reservation.BookingReference,
-                GuestName = reservation.GuestName!,
-                TotalAmount = reservation.TotalPrice,
-                PaymentMethod = paymentMethod
+                return NotFound();
+            }
+
+            // 🔍 Check if a payment already exists for this reservation
+            var existingPayment = await _context.Payments
+                .FirstOrDefaultAsync(p => p.ReservationId == model.ReservationId);
+
+            if (existingPayment != null)
+            {
+                TempData["Error"] = "A payment has already been made for this reservation.";
+                return View(model);
+            }
+
+            // ✅ Proceed with payment creation
+            var payment = new Payment
+            {
+                ReservationId = model.ReservationId,
+                Reservation = reservation,
+                Amount = model.TotalAmount,
+                PaymentMethod = model.PaymentMethod,
+                Status = PaymentStatus.Success,
+                TransactionDate = DateTime.UtcNow,
+                PaidAt = DateTime.UtcNow
             };
 
-            return View(viewModel);
-        }
-
-
-
-        /***********************************************************************************************************************/
-        /***********************************************************************************************************************/
-        /***********************************************************************************************************************/
-        //  Process Payment
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ProcessPayment(PaymentViewModel model)
-        {
-            var reservation = await _context.Reservations.FindAsync(model.ReservationId);
-            if (reservation == null) return NotFound();
-
-            if (model.PaymentMethod == "GCash" && string.IsNullOrEmpty(model.GCashNumber))
+            if (model.PaymentMethod == "GCash")
             {
-                TempData["Error"] = "GCash number is required.";
-                return RedirectToAction("Checkout", new { reservationId = model.ReservationId, paymentMethod = model.PaymentMethod });
+                payment.GCashNumber = model.GCashNumber;
+                payment.GCashTransactionId = Guid.NewGuid().ToString("N").Substring(0, 10).ToUpper();
             }
 
-            // ✅ Update reservation status
+            _context.Payments.Add(payment);
+
+            // ✅ Mark reservation as paid
             reservation.IsPaid = true;
+            reservation.Status = ReservationStatus.Confirmed;
+
+            // ✅ Update room status (if applicable)
+            var room = await _context.Rooms.FindAsync(reservation.RoomId);
+            if (room != null)
+            {
+                room.Status = RoomStatus.Booked;
+                room.LastStatusUpdate = DateTime.UtcNow;
+            }
+
             await _context.SaveChangesAsync();
 
-            // ✅ Send Email Confirmation
-            if (!string.IsNullOrEmpty(reservation.GuestEmail))
+            // ✅ Send confirmation email
+            if (!string.IsNullOrWhiteSpace(reservation.GuestEmail))
             {
-                string subject = "Reservation Confirmed - Your Booking Details";
-                string? reservationSummaryUrl = Url.Action("Summary", "Reservation", new { id = reservation.ReservationId }, Request.Scheme);
-
-                string message = $@"
-                    <h3>Thank you for your payment!</h3>
-                    <p>Your reservation (<strong>Reference: {reservation.BookingReference}</strong>) is now confirmed.</p>
-                    <p>You can view your reservation summary by clicking the link below:</p>
-                    <a href='{reservationSummaryUrl}'>View Reservation Summary</a>
-                ";
+                var subject = "Reservation Confirmed - Your Booking Details";
+                var message = $"<h3>Thank you for your payment!</h3>" +
+                              $"<p>Your reservation (Reference: {reservation.BookingReference}) is now confirmed.</p>" +
+                              $"<p>We have sent this confirmation to your email: {reservation.GuestEmail}.</p>" +
+                              $"<p><a href='{Url.Action("MyReservationSummary", "Booking", new { id = reservation.ReservationId }, Request.Scheme)}'>View Reservation Summary</a></p>";
 
                 await _emailService.SendEmailAsync(reservation.GuestEmail, subject, message);
             }
 
-            TempData["Success"] = "Payment successful! Confirmation email sent.";
-            return RedirectToAction("Success", new { reservationId = model.ReservationId });
+            return RedirectToAction("PaymentSuccess", "Payment", new { area = "FrontDesk", paymentId = payment.PaymentId });
         }
 
 
+
         /***********************************************************************************************************************/
         /***********************************************************************************************************************/
         /***********************************************************************************************************************/
-        //  Success Page
-        [HttpGet]
-        public async Task<IActionResult> Success(int reservationId)
+        // Payment success redirection
+        public async Task<IActionResult> PaymentSuccess(int paymentId)
         {
-            var reservation = await _context.Reservations
-                .Include(r => r.Room)
-                .FirstOrDefaultAsync(r => r.ReservationId == reservationId);
+            // Retrieve the Payment record including its Reservation (and optionally Room details)
+            var payment = await _context.Payments
+                .Include(p => p.Reservation)
+                .ThenInclude(r => r.Room)
+                .FirstOrDefaultAsync(p => p.PaymentId == paymentId);
 
-            if (reservation == null) return NotFound();
-
-            var viewModel = new PaymentViewModel
+            if (payment == null)
             {
-                ReservationId = reservation.ReservationId,
-                BookingReference = reservation.BookingReference,
-                GuestName = reservation.GuestName!,
-                TotalAmount = reservation.TotalPrice
-            };
+                return NotFound();
+            }
 
-            return View(viewModel);
+            // Return a view that shows the payment success details.
+            return View(payment);
         }
 
         /***********************************************************************************************************************/
         /***********************************************************************************************************************/
         /***********************************************************************************************************************/
-        //  Generate a Summary of the Reservation
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+        /***********************************************************************************************************************/
+
         [HttpGet]
-        public async Task<IActionResult> Summary(int id)
+        public async Task<IActionResult> MyReservationSummary(int id)
         {
+            // Retrieve the reservation including its related Room and Payment details
             var reservation = await _context.Reservations
                 .Include(r => r.Room)
+                .Include(r => r.Payment)
                 .FirstOrDefaultAsync(r => r.ReservationId == id);
 
-            if (reservation == null) return NotFound();
+            if (reservation == null)
+                return NotFound();
 
-            var viewModel = new PaymentViewModel
-            {
-                ReservationId = reservation.ReservationId,
-                BookingReference = reservation.BookingReference,
-                GuestName = reservation.GuestName!,
-                TotalAmount = reservation.TotalPrice,
-                PaymentMethod = reservation.IsPaid ? "Paid" : "Pending",
-                CheckInDate = reservation.CheckInDate, // got an errr here
-                CheckOutDate = reservation.CheckOutDate, // got an error here as well
-                RoomNumber = reservation.Room?.RoomNumber, // got an error here as well 
-                RoomImage1 = reservation.Room?.Image1 // got an error here as we ll
-            };
-
-            return View(viewModel);
+            return View(reservation);
         }
     }
 }

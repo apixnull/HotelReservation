@@ -1,24 +1,27 @@
 ﻿@model HotelReservation.Models.Payment
 
 @{
-    Layout = "_Layout"; // or your preferred layout
     var reservationSummaryUrl = Url.Action("MyReservationSummary", "Booking", new { id = Model.ReservationId });
     var homeUrl = Url.Action("Index", "Home");
+    ViewData["Title"] = "Payment Successful";
 }
 
-<div class="container mt-5">
-    <div class="card shadow-sm">
-        <div class="card-header bg-success text-white">
-            <h3 class="card-title">Payment Successful</h3>
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card shadow-sm" style="max-width: 500px; width: 100%;">
+        <div class="card-header bg-success text-white text-center">
+            <h3 class="card-title mb-0">Payment Successful</h3>
         </div>
-        <div class="card-body">
+        <div class="card-body text-center">
             <p class="lead">Thank you for your payment!</p>
-            <p>Your reservation (Reference: @Model.Reservation.BookingReference) is now confirmed.</p>
-            <p>A confirmation email has been sent to your email address.</p>
-            <p>If you'd like to view your reservation summary, click the link below:</p>
-            <a href="@reservationSummaryUrl" class="btn btn-primary">View Reservation Summary</a>
+            <p>Your reservation (Reference: <strong>@Model.Reservation.BookingReference</strong>) is now confirmed.</p>
+            <div class="alert alert-info mt-3">
+                <p class="mb-1">A confirmation email has been sent to:</p>
+                <p class="fw-bold">@Model.Reservation.GuestEmail</p>
+            </div>
         </div>
         <div class="card-footer text-center">
+            <a asp-area="" asp-controller="Booking" asp-action="MyReservationSummary" asp-route-id="@Model.ReservationId" class="btn btn-secondary me-2">View Reservation Summary</a>
+            <br />
             <a href="@homeUrl" class="btn btn-secondary">Return to Home</a>
         </div>
     </div>

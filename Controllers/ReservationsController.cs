@@ -32,21 +32,24 @@ namespace HotelReservation.Controllers
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(bookingReference))
             {
                 TempData["Error"] = "Please enter both Email and Booking Reference.";
-                return View();
+                return RedirectToAction("FindMyBooking");
             }
 
             var reservations = await _context.Reservations
                 .Where(r => r.GuestEmail == email && r.BookingReference == bookingReference)
-                .ToListAsync();
+                .Include(r => r.Room)       // Include Room details
+                .Include(r => r.Payment)    // Include Payment details
+                .FirstOrDefaultAsync(); // ✅ Returns a single reservation;
 
-            if (!reservations.Any())
+            if (reservations == null)
             {
                 TempData["Error"] = "No booking found with the provided details.";
-                return View();
+                return RedirectToAction("FindMyBooking");
             }
 
             return View("GuestBookings", reservations);
         }
+
 
         // GET: My Bookings (For Logged-In Users)
         [Authorize]

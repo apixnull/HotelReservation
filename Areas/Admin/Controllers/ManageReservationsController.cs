@@ -43,7 +43,7 @@ namespace HotelReservation.Areas.Admin.Controllers
             {
                 reservations = reservations.Where(r => r.Status == parsedStatus);
             }
-
+             
             // Apply payment filter
             if (!string.IsNullOrEmpty(payment))
             {

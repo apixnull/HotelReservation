@@ -2,8 +2,6 @@
 using HotelReservation.Data;
 using HotelReservation.Models;
 using HotelReservation.ViewModels;
-using System;
-using System.Threading.Tasks;
 using HotelReservation.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -81,6 +79,18 @@ namespace HotelReservation.Controllers
 
             // Update reservation status
             reservation.IsPaid = true;
+            reservation.Status = ReservationStatus.Confirmed; // Mark as confirmed  
+
+
+            // ✅ Update room status directly (no need for reservation.Room)
+            var room = await _context.Rooms.FindAsync(reservation.RoomId); // Access room directly
+            if (room != null)
+            {
+                room.Status = RoomStatus.Booked;
+                room.LastStatusUpdate = DateTime.UtcNow;
+            }
+
+
             await _context.SaveChangesAsync();
 
             var subject = "Reservation Confirmed - Your Booking Details";
@@ -90,7 +100,7 @@ namespace HotelReservation.Controllers
               $"<p>You can view your reservation summary by clicking the link below:</p>" +
               $"<a href='{Url.Action("MyReservationSummary", "Booking", new { id = reservation.ReservationId }, Request.Scheme)}'>View Reservation Summary</a>";
 
-
+             
             // Send the confirmation email if the guest email is provided
             if (!string.IsNullOrWhiteSpace(reservation.GuestEmail))
             {

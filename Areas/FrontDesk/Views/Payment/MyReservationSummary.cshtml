@@ -1,0 +1,26 @@
+﻿@model HotelReservation.Models.Reservation
+
+@{
+    Layout = "_Layout"; // or your preferred layout
+}
+
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h3 class="card-title">Reservation Confirmed</h3>
+        </div>
+        <div class="card-body">
+            <p><strong>Booking Reference:</strong> @Model.BookingReference</p>
+            <p><strong>Room Number:</strong> @Model.Room?.RoomNumber</p>
+            <p><strong>Room Type:</strong> @Model.Room?.RoomType</p>
+            <p><strong>Description:</strong> @Model.Room?.Description</p>
+            <p><strong>Check-In Date:</strong> @Model.CheckInDate.ToShortDateString()</p>
+            <p><strong>Check-Out Date:</strong> @Model.CheckOutDate.ToShortDateString()</p>
+            <p><strong>Total Price:</strong> ₱@Model.TotalPrice</p>
+            <p><strong>Status:</strong> @Model.Status</p>
+        </div>
+        <div class="card-footer text-center">
+            <a href="@Url.Action("Index", "Reservations")" class="btn btn-primary me-2">Return Home</a>
+        </div>
+    </div>
+</div>

@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace HotelReservation.Areas.FrontDesk.Controllers
 {
     [Area("FrontDesk")]
-    [Authorize(Roles = "FrontDesk")]
+    [Authorize(Policy = "FrontDeskOnly")]
     public class DashboardController : Controller
     {
         private readonly ApplicationDbContext _context;

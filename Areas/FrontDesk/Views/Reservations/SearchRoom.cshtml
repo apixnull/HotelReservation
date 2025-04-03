@@ -1,113 +1,179 @@
 ﻿@model HotelReservation.Areas.FrontDesk.ViewModels.SearchRoomViewModel
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
 @{
-    ViewData["Title"] = "Search Available Rooms";
+    ViewData["Title"] = "Search Room";
 }
 
-<h2>Search Available Rooms</h2>
-
-<!-- Search Form -->
-<form method="post" asp-action="SearchRoom">
-    <div class="row">
-        <div class="col-md-3">
-            <label>Check-In Date</label>
-            <input type="date" asp-for="CheckInDate" class="form-control" id="checkInDate" />
-            <span asp-validation-for="CheckInDate" class="text-danger"></span>
-        </div>
-        <div class="col-md-3">
-            <label>Check-Out Date</label>
-            <input type="date" asp-for="CheckOutDate" class="form-control" id="checkOutDate" />
-            <span asp-validation-for="CheckOutDate" class="text-danger"></span>
-        </div>
-        <div class="col-md-2">
-            <label>Max Occupancy</label>
-            <input type="number" asp-for="MaxOccupancy" class="form-control" />
-            <span asp-validation-for="MaxOccupancy" class="text-danger"></span>
-        </div>
-        <div class="col-md-2">
-            <label>Room Type</label>
-            <select asp-for="SelectedRoomType" asp-items="Html.GetEnumSelectList<HotelReservation.Models.RoomType>()" class="form-control"></select>
-            <span asp-validation-for="SelectedRoomType" class="text-danger"></span>
-        </div>
-        <div class="col-md-2 d-flex align-items-end">
-            <button type="submit" class="btn btn-primary w-100">Search</button>
+<!-- Gradient Background Start -->
+<div class="bg-gradient bg-warning bg-opacity-75 py-5">
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-xl-9">
+                <h1 class="text-white fw-bold">Top Hotel in the City</h1>
+                <h3 class="text-light">Hotel & Resort</h3>
+            </div>
         </div>
     </div>
-</form>
+</div>
+<!-- Gradient Background End -->
+<!-- Booking Room Start -->
+<div class="booking-area py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <form asp-area="FrontDesk" asp-controller="Reservations" asp-action="SearchRoom" method="post" onsubmit="return validateDates()">
+                    <div class="booking-wrap d-flex flex-wrap justify-content-between align-items-center gap-3 p-3 bg-white shadow rounded">
 
-<hr />
+                        <!-- Check-In Date -->
+                        <div class="single-select-box">
+                            <label class="fw-bold">Check In Date:</label>
+                            <input asp-for="CheckInDate" type="date" class="checkin form-control border-warning bg-white" required />
+                            <span asp-validation-for="CheckInDate" class="text-danger"></span>
+                        </div>
 
-@if (Model.AvailableRooms != null)
+                        <!-- Check-Out Date -->
+                        <div class="single-select-box">
+                            <label class="fw-bold">Check Out Date:</label>
+                            <input asp-for="CheckOutDate" type="date" class="checkout form-control border-warning bg-white" required disabled />
+                            <span asp-validation-for="CheckOutDate" class="text-danger"></span>
+                        </div>
+
+                        <!-- Max Occupancy -->
+                        <div class="single-select-box">
+                            <label class="fw-bold">Max Occupancy:</label>
+                            <select asp-for="MaxOccupancy" class="form-select border-warning">
+                                @for (int i = 1; i <= 10; i++)
+                                {
+                                    <option value="@i">@i</option>
+                                }
+                            </select>
+                            <span asp-validation-for="MaxOccupancy" class="text-danger"></span>
+                        </div>
+
+                        <!-- Room Category -->
+                        <div class="single-select-box">
+                            <label class="fw-bold">Room Category:</label>
+                            <select asp-for="SelectedRoomType" class="form-select border-warning">
+                                <option value="">Any</option>
+                                <option value="Standard">Standard</option>
+                                <option value="Deluxe">Deluxe</option>
+                                <option value="Suite">Suite</option>
+                            </select>
+                            <span asp-validation-for="SelectedRoomType" class="text-danger"></span>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="single-select-box text-center">
+                            <button type="submit" class="btn btn-warning w-100 fw-bold">Search Rooms</button>
+                            <input type="hidden" name="scrollTo" value="available-rooms">
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Available Rooms Section -->
+@if (Model.AvailableRooms != null && Model.AvailableRooms.Any())
 {
-    <h3>Available Rooms</h3>
-    <div class="row">
-        @foreach (var room in Model.AvailableRooms)
-        {
-            <div class="col-md-12">
-                <!-- 1 Room per row -->
-                <div class="card mb-4 shadow-lg">
-                    <div class="row g-0">
-                        <div class="col-md-5">
-                            <img src="@room.Image1" class="img-fluid rounded" alt="Room Image">
-                        </div>
-                        <div class="col-md-7">
-                            <div class="card-body">
-                                <h4 class="card-title">Room @room.RoomNumber</h4>
-                                <p class="card-text"><strong>Type:</strong> @room.RoomType</p>
-                                <p class="card-text"><strong>Max Occupancy:</strong> @room.MaxOccupancy</p>
-                                <p class="card-text"><strong>Price:</strong> ₱@room.Price per night</p>
-                                <p class="card-text">@room.Description</p>
-                                <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#roomDetails-@room.RoomId">See More Details</button>
-                                <a asp-action="Create" asp-route-roomId="@room.RoomId" asp-route-checkIn="@Model.CheckInDate" asp-route-checkOut="@Model.CheckOutDate" class="btn btn-success">Book Now</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div id="available-rooms" class="container py-4">
+        <h2 class="text-center fw-bold text-warning">Available Rooms</h2>
+        <div class="row">
+            @foreach (var room in Model.AvailableRooms)
+            {
+                <div class="col-md-4">
+                    <div class="card shadow-sm border-warning mb-3">
+                        <img src="@room.Image1" class="card-img-top" alt="Room Image">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold">@room.RoomNumber</h5>
+                            <p class="card-text">Room Type: @room.RoomType</p>
+                            <p class="card-text">Max Occupancy: @room.MaxOccupancy</p>
+                            <p class="card-text text-muted">Status: @room.Status</p>
+                            <p class="card-text">@room.Description</p>
+                            <p class="card-text">
+                                <strong>Rating:</strong>
+                                <!-- Example of 4-star rating using Bootstrap icons -->
+                                <div class="stars">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <span class="bi bi-star @(i <= 4 ? "text-warning" : "text-muted")"></span> <!-- Filled stars are text-warning, empty are text-muted -->
+                                    }
+                                </div>
+                            </p>
 
-            <!-- Room Details Modal -->
-            <div class="modal fade" id="roomDetails-@room.RoomId" tabindex="-1" aria-labelledby="roomDetailsLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Room @room.RoomNumber Details</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <img src="@room.Image2" class="img-fluid mb-3" alt="Room Image">
-                            <p><strong>Type:</strong> @room.RoomType</p>
-                            <p><strong>Price:</strong> ₱@room.Price per night</p>
-                            <p><strong>Max Occupancy:</strong> @room.MaxOccupancy</p>
-                            <p><strong>Description:</strong> @room.Description</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <a asp-action="Create" asp-route-roomId="@room.RoomId" asp-route-checkIn="@Model.CheckInDate" asp-route-checkOut="@Model.CheckOutDate" class="btn btn-success">Book Now</a>
+                            <a href="@Url.Action("Create", "Reservations", new { roomId = room.RoomId, checkIn = Model.CheckInDate.ToString("yyyy-MM-dd"), checkOut = Model.CheckOutDate.ToString("yyyy-MM-dd") })" class="btn btn-warning w-100 fw-bold">Reserve Now</a>
                         </div>
                     </div>
                 </div>
-            </div>
-        }
+            }
+        </div>
+    </div>
+}
+else if (Model.AvailableRooms != null)
+{
+    <div class="container py-4 text-center">
+        <h3 class="text-danger">No rooms available for the selected dates.</h3>
     </div>
 }
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            let today = new Date().toISOString().split("T")[0];
-            document.getElementById("checkInDate").setAttribute("min", today);
-            document.getElementById("checkOutDate").setAttribute("min", today);
+            const today = new Date();
 
-            document.getElementById("checkInDate").addEventListener("change", function () {
-                let checkInDate = new Date(this.value);
-                let minCheckOutDate = new Date(checkInDate);
-                minCheckOutDate.setDate(minCheckOutDate.getDate() + 1);
-                let minDateFormatted = minCheckOutDate.toISOString().split("T")[0];
-                document.getElementById("checkOutDate").setAttribute("min", minDateFormatted);
-                if (document.getElementById("checkOutDate").value < minDateFormatted) {
-                    document.getElementById("checkOutDate").value = minDateFormatted;
+            flatpickr(".checkin", {
+                dateFormat: "Y-m-d",
+                minDate: today,
+                onChange: function (selectedDates) {
+                    let minCheckoutDate = new Date(selectedDates[0]);
+                    minCheckoutDate.setDate(minCheckoutDate.getDate() + 1);
+
+                    flatpickr(".checkout", {
+                        dateFormat: "Y-m-d",
+                        minDate: minCheckoutDate,
+                        disableMobile: true
+                    });
+
+                    // Enable Check-Out Date when Check-In Date is selected
+                    document.querySelector(".checkout").disabled = false;
                 }
             });
+
+            flatpickr(".checkout", {
+                dateFormat: "Y-m-d",
+                minDate: today,
+                disableMobile: true,
+                clickOpens: false
+            });
         });
+
+        function validateDates() {
+            const checkIn = new Date(document.querySelector(".checkin").value);
+            const checkOut = new Date(document.querySelector(".checkout").value);
+
+            // Ensure both Check-in and Check-out dates are valid
+            if (checkIn >= checkOut) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Dates',
+                    text: 'Check-out date must be later than Check-in date.',
+                    confirmButtonText: 'OK',
+                    background: '#f8d7da',
+                    color: '#721c24'
+                });
+                return false;
+            }
+
+            // Enable CheckOut date for form submission
+            document.querySelector(".checkout").disabled = false;
+
+            return true;
+        }
     </script>
 }
