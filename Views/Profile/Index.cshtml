@@ -1,0 +1,108 @@
+﻿@model HotelReservation.ViewModels.UserProfileViewModel
+
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<div class="container mt-4">
+    <h2 class="text-center">@ViewData["Title"]</h2>
+
+    <!-- Email Verification Alert -->
+    <div class="alert @(Model.IsEmailVerified ? "alert-success" : "alert-danger") text-center" role="alert">
+        @if (Model.IsEmailVerified)
+        {
+            <span>✅ Your email is verified.</span>
+        }
+        else
+        {
+            <span>⚠️ Your email is not verified. <a href="#">Verify now</a></span>
+        }
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Profile Information</h5>
+
+                    <!-- Profile Picture -->
+                    <img src="@Model.ProfilePictureUrl" alt="Profile Picture" class="rounded-circle mb-3" width="150" height="150">
+                    <form asp-action="ChangeProfilePicture" method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="profilePicture" class="form-label">Change Profile Picture</label>
+                            <input type="file" id="profilePicture" name="ProfilePicture" class="form-control" required />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Profile Picture</button>
+                    </form>
+
+                    <hr>
+
+                    <!-- Personal Info -->
+                    <p><strong>Name:</strong> @Model.FirstName @Model.LastName</p>
+                    <p><strong>Email:</strong> @Model.Email</p>
+                    <p><strong>Phone:</strong> @Model.Phone</p>
+
+                    <button class="btn btn-warning mt-2" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                        ✏️ Edit Profile
+                    </button>
+
+                    <hr>
+
+                    <!-- Change Password -->
+                    <h5>Change Password</h5>
+                    <form asp-action="ChangePassword" method="post">
+                        <div class="mb-3">
+                            <label for="currentPassword" class="form-label">Current Password</label>
+                            <input type="password" id="currentPassword" name="CurrentPassword" class="form-control" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label">New Password</label>
+                            <input type="password" id="newPassword" name="NewPassword" class="form-control" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmNewPassword" class="form-label">Confirm New Password</label>
+                            <input type="password" id="confirmNewPassword" name="ConfirmNewPassword" class="form-control" required />
+                        </div>
+                        <button type="submit" class="btn btn-danger">Update Password</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="EditProfile" method="post">
+                    <div class="mb-3">
+                        <label for="firstName" class="form-label">First Name</label>
+                        <input type="text" id="firstName" name="FirstName" class="form-control" value="@Model.FirstName" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="lastName" class="form-label">Last Name</label>
+                        <input type="text" id="lastName" name="LastName" class="form-control" value="@Model.LastName" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" id="email" name="Email" class="form-control" value="@Model.Email" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone</label>
+                        <input type="text" id="phone" name="Phone" class="form-control" value="@Model.Phone" required />
+                    </div>
+                    <button type="submit" class="btn btn-success">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS (required for modals) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
