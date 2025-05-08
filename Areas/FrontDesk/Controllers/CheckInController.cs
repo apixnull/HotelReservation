@@ -26,13 +26,16 @@ namespace YourNamespace.Areas.FrontDesk.Controllers
         public async Task<IActionResult> Index()
         {
             var today = DateTime.UtcNow.Date;
+            var tomorrow = today.AddDays(1);
+
             var reservations = await _context.Reservations
-                .Where(r => r.CheckInDate.Date == today)
+                .Where(r => r.CheckInDate.Date == today || r.CheckInDate.Date == tomorrow)
                 .Include(r => r.Room)
                 .ToListAsync();
 
-            return View(reservations); // Passing full list directly
+            return View(reservations);
         }
+
 
 
 
